@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>井字遊戲 Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div>
+          <h1 class="title">井字遊戲</h1>
+          <p class="subtitle">雙人 / 單人對電腦（Minimax 零總和）</p>
+        </div>
+        <div class="controls">
+          <label class="field">
+            <span class="fieldLabel">模式</span>
+            <select id="mode">
+              <option value="pvp">雙人遊玩</option>
+              <option value="cpu">單人對電腦</option>
+            </select>
+          </label>
+
+          <label class="field" id="humanMarkField">
+            <span class="fieldLabel">你使用</span>
+            <select id="humanMark">
+              <option value="X">X（先手）</option>
+              <option value="O">O（後手）</option>
+            </select>
+          </label>
+
+          <button id="reset" class="btn" type="button">重新開始</button>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="boardCard">
+          <div id="status" class="status" aria-live="polite"></div>
+          <div id="board" class="board" role="grid" aria-label="井字棋盤"></div>
+        </section>
+
+        <aside class="side">
+          <div class="panel">
+            <div class="panelTitle">操作說明</div>
+            <ul class="tips">
+              <li>雙人模式：輪流下 X / O。</li>
+              <li>電腦模式：電腦使用 Minimax（零總和）計算最佳步，不隨機。</li>
+              <li>你可切換你使用的符號（X 先手 / O 後手）。</li>
+            </ul>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="footer">
+        <span>離線可用：直接開啟 <code>index.html</code></span>
+      </footer>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

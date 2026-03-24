@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Unity 2D 冒險遊戲 — 獨立作品介紹（與 Python 小遊戲集分開）"
+    />
+    <title>Unity 2D 冒險遊戲｜獨立作品</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../script.js"></script>
+  </head>
+
+  <body>
+    <canvas class="fx-canvas" aria-hidden="true"></canvas>
+    <div class="cursor-glow" aria-hidden="true"></div>
+    <div class="scroll-progress" aria-hidden="true">
+      <div class="scroll-progress-bar"></div>
+    </div>
+
+    <a class="skip-link" href="#content">跳到主要內容</a>
+
+    <header class="site-header" id="top">
+      <div class="container header-inner">
+        <a class="brand" href="../index.html" aria-label="回到首頁">
+          <span class="brand-mark" aria-hidden="true">◆</span>
+          <span class="brand-text">你的名字</span>
+        </a>
+
+        <nav class="nav" aria-label="主要導覽">
+          <button
+            class="nav-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="nav-menu"
+          >
+            <span class="nav-toggle-icon" aria-hidden="true"></span>
+            <span class="sr-only">開啟/關閉選單</span>
+          </button>
+          <div class="nav-menu" id="nav-menu">
+            <a class="nav-link" href="../about.html">關於我</a>
+            <a class="nav-link" href="../index.html#skills">技能</a>
+            <a class="nav-link" href="../index.html#projects">作品</a>
+            <a class="nav-link" href="../index.html#timeline">經歷</a>
+            <a class="nav-link" href="../index.html#contact">聯絡</a>
+            <a class="nav-link" href="../games.html" title="另一件作品：瀏覽器內 Python 小遊戲"
+              >Python 小遊戲集</a
+            >
+          </div>
+        </nav>
+
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" aria-label="切換深色模式">
+            <span class="theme-toggle-icon" aria-hidden="true"></span>
+          </button>
+          <a class="btn btn-primary" href="../index.html#contact">合作邀約</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="content">
+      <section class="hero section">
+        <div class="container">
+          <div class="hero-copy reveal">
+            <p class="badge">
+              <span class="dot" aria-hidden="true"></span>
+              獨立作品 · Unity
+            </p>
+            <h1 class="hero-title">Unity 2D 冒險遊戲</h1>
+            <p class="hero-subtitle">
+              使用 <strong>Unity</strong> 開發的 2D 冒險遊戲。本頁為專屬介紹，與網站上的
+              Python 小遊戲集為不同專案。
+            </p>
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="#details">查看詳情</a>
+              <a class="btn btn-ghost" href="../index.html#projects">回到作品集</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="details">
+        <div class="container">
+          <div class="panel reveal" style="margin-bottom: 1.25rem">
+            <h3 class="panel-title">📌 專案說明</h3>
+            <p class="muted" style="line-height: 1.8; margin: 0">
+              此 Unity 作品已從「Python 小遊戲集」中<strong>獨立</strong>出來，方便在履歷／作品集單獨展示引擎、場景與遊戲設計。若之後有
+              WebGL 建置檔，可在此頁嵌入遊玩或提供下載連結。
+            </p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2rem">
+            <div class="panel reveal">
+              <h3 class="panel-title">📖 遊戲背景</h3>
+              <p class="muted" style="line-height: 1.8">
+                在一個充滿魔法的世界中，玩家扮演一位年輕的冒險者，必須拯救被邪惡勢力佔領的王國。故事從主角的家鄉開始，逐步展開壯大的冒險旅程。
+              </p>
+            </div>
+
+            <div class="about-grid">
+              <div class="panel reveal">
+                <h3 class="panel-title">🗺️ 遊戲場景</h3>
+                <ul class="list">
+                  <li><strong>森林場景：</strong>茂密的森林，充滿野生動物和隱藏的寶藏。</li>
+                  <li><strong>城鎮場景：</strong>繁華的城鎮，玩家可以與 NPC 互動、購買道具。</li>
+                </ul>
+              </div>
+
+              <div class="panel reveal">
+                <h3 class="panel-title">👥 遊戲角色</h3>
+                <ul class="list">
+                  <li><strong>主角：</strong>一位勇敢的年輕冒險者，具有多種技能和武器。</li>
+                  <li><strong>夥伴：</strong>在旅途中遇到的盟友，提供支援和特殊能力。</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="about-grid">
+              <div class="panel reveal">
+                <h3 class="panel-title">👾 敵人圖鑑</h3>
+                <ul class="list">
+                  <li><strong>哥布林：</strong>小型怪物，攻擊力低但數量多。</li>
+                  <li><strong>巨魔：</strong>大型敵人，防禦力強但移動緩慢。</li>
+                  <li><strong>巫師：</strong>使用魔法攻擊，遠程威脅。</li>
+                </ul>
+              </div>
+
+              <div class="panel reveal">
+                <h3 class="panel-title">🎒 道具圖鑑</h3>
+                <ul class="list">
+                  <li><strong>治療藥水：</strong>恢復生命值。</li>
+                  <li><strong>力量戒指：</strong>增加攻擊力。</li>
+                  <li><strong>隱形斗篷：</strong>短暫隱藏身形。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p class="footer-copyright">
+          © <span id="year"></span> 你的名字. All rights reserved.
+        </p>
+        <a class="footer-back-top" href="#top" aria-label="回到頁首">
+          <span aria-hidden="true">↑</span>
+        </a>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

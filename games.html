@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Python小遊戲集：踩地雷、井字遊戲、打磚塊"
+    />
+    <title>Python小遊戲集</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./script.js"></script>
+  </head>
+
+  <body>
+    <canvas class="fx-canvas" aria-hidden="true"></canvas>
+    <div class="cursor-glow" aria-hidden="true"></div>
+    <div class="scroll-progress" aria-hidden="true">
+      <div class="scroll-progress-bar"></div>
+    </div>
+
+    <a class="skip-link" href="#content">跳到主要內容</a>
+
+    <header class="site-header" id="top">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="回到首頁">
+          <span class="brand-mark" aria-hidden="true">◆</span>
+          <span class="brand-text">你的名字</span>
+        </a>
+
+        <nav class="nav" aria-label="主要導覽">
+          <button
+            class="nav-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="nav-menu"
+          >
+            <span class="nav-toggle-icon" aria-hidden="true"></span>
+            <span class="sr-only">開啟/關閉選單</span>
+          </button>
+          <div class="nav-menu" id="nav-menu">
+            <a class="nav-link" href="about.html">關於我</a>
+            <a class="nav-link" href="index.html#skills">技能</a>
+            <a class="nav-link" href="index.html#projects">作品</a>
+            <a class="nav-link" href="index.html#timeline">經歷</a>
+            <a class="nav-link" href="index.html#contact">聯絡</a>
+            <a class="nav-link" href="games.html">遊戲集</a>
+          </div>
+        </nav>
+
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" aria-label="切換深色模式">
+            <span class="theme-toggle-icon" aria-hidden="true"></span>
+          </button>
+          <a class="btn btn-primary" href="index.html#contact">合作邀約</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="content">
+      <section class="hero section">
+        <div class="container">
+          <div class="hero-copy reveal">
+            <h1 class="hero-title">
+              Python小遊戲集
+            </h1>
+            <p class="hero-subtitle">
+              使用 Python + Pyodide 在瀏覽器中執行的互動式小遊戲（踩地雷、井字棋、打磚塊）。Unity
+              專案已獨立為
+              <a class="link" href="unity-game/index.html">Unity 2D 作品頁</a>。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="games-grid">
+            <div class="game-card reveal">
+              <div class="game-icon">🎯</div>
+              <h3>踩地雷</h3>
+              <p class="muted">經典邏輯遊戲，點擊格子避免踩到地雷。需要謹慎推理和運氣。</p>
+              <a href="minesweeper.html" class="btn btn-primary">開始遊戲</a>
+            </div>
+
+            <div class="game-card reveal">
+              <div class="game-icon">⭕</div>
+              <h3>井字遊戲</h3>
+              <p class="muted">二人對戰遊戲，先連成一線者獲勝。簡單卻充滿策略性。</p>
+              <a href="tic-tac-toe.html" class="btn btn-primary">開始遊戲</a>
+            </div>
+
+            <div class="game-card reveal">
+              <div class="game-icon">🏓</div>
+              <h3>打磚塊</h3>
+              <p class="muted">經典街機遊戲，使用球拍擊球打破磚塊。考驗反應和控制力。</p>
+              <a href="brick-breaker.html" class="btn btn-primary">開始遊戲</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p class="footer-copyright">
+          © <span id="year"></span> 你的名字. All rights reserved.
+        </p>
+        <a class="footer-back-top" href="#top" aria-label="回到頁首">
+          <span aria-hidden="true">↑</span>
+        </a>
+      </div>
+    </footer>
+
+    <script>
+      // Initialize year
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
+        

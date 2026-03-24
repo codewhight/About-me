@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="個人簡介｜作品集｜技能｜聯絡方式。單頁靜態網站（HTML/CSS/JS）。"
+    />
+    <title>你的名字｜個人簡介</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./script.js"></script>
+  </head>
+
+  <body>
+    <canvas class="fx-canvas" aria-hidden="true"></canvas>
+    <div class="cursor-glow" aria-hidden="true"></div>
+    <div class="scroll-progress" aria-hidden="true">
+      <div class="scroll-progress-bar"></div>
+    </div>
+
+    <a class="skip-link" href="#content">跳到主要內容</a>
+
+    <header class="site-header" id="top">
+      <div class="container header-inner">
+        <a class="brand" href="#top" aria-label="回到頁首">
+          <span class="brand-text">你的名字</span>
+        </a>
+
+        <nav class="nav" aria-label="主要導覽">
+          <button
+            class="nav-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="nav-menu"
+          >
+            <span class="nav-toggle-icon" aria-hidden="true"></span>
+            <span class="sr-only">開啟/關閉選單</span>
+          </button>
+
+          <div class="nav-menu" id="nav-menu">
+            <a class="nav-link" href="about.html">關於我</a>
+            <a class="nav-link" href="#skills" data-scrollspy>技能</a>
+            <a class="nav-link" href="#projects" data-scrollspy>作品</a>
+            <a class="nav-link" href="#timeline" data-scrollspy>經歷</a>
+            <a class="nav-link" href="#contact" data-scrollspy>聯絡</a>
+          </div>
+        </nav>
+
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" aria-label="切換深色模式">
+            <span class="theme-toggle-icon" aria-hidden="true"></span>
+          </button>
+          <a class="btn btn-primary" href="#contact">合作邀約</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="content">
+      <section class="hero section">
+        <div class="container hero-grid">
+          <div class="hero-copy reveal">
+            <p class="badge">
+              <span class="dot" aria-hidden="true"></span>
+              可接案／實習／全職
+            </p>
+            <h1 class="hero-title">
+              嗨，我是 <span class="grad">你的名字</span><br />
+              一位
+              <span
+                class="type-rotate grad2"
+                data-roles="前端／全端,互動設計,效能優化,UI 工程師"
+                aria-label="角色輪播"
+              ></span>
+              開發者
+            </h1>
+            <p class="hero-subtitle">
+              我擅長把想法做成「好看、好用、跑得快」的網站：注重 UX、效能與可維護性。
+            </p>
+
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="#projects">看作品</a>
+              <a class="btn btn-ghost" href="about.html">認識我</a>
+            </div>
+
+            <ul class="quick-facts" aria-label="重點資訊">
+              <li><strong>地點</strong>：台灣／遠端</li>
+              <li><strong>專長</strong>：HTML、CSS、JavaScript</li>
+              <li><strong>興趣</strong>：介面設計、互動、效能優化</li>
+            </ul>
+          </div>
+
+          <aside class="hero-card reveal" aria-label="個人卡片">
+            <div class="avatar" aria-hidden="true">
+              <span>YN</span>
+            </div>
+            <div class="card-body">
+              <h2 class="card-title">你的名字</h2>
+              <p class="card-meta">Frontend Developer · UI/UX Friendly</p>
+
+              <div class="card-actions">
+                <button class="btn btn-small btn-ghost" type="button" data-copy-email>
+                  複製 Email
+                </button>
+                <a class="btn btn-small btn-ghost" href="#contact">社群連結</a>
+              </div>
+
+              <dl class="card-stats">
+                <div>
+                  <dt>專案</dt>
+                  <dd>10+</dd>
+                </div>
+                <div>
+                  <dt>主技術</dt>
+                  <dd>JS</dd>
+                </div>
+                <div>
+                  <dt>狀態</dt>
+                  <dd>Available</dd>
+                </div>
+              </dl>
+            </div>
+          </aside>
+        </div>
+        <div class="hero-bg" aria-hidden="true"></div>
+      </section>
+
+      <section class="section" id="about">
+        <div class="container">
+          <header class="section-head reveal">
+            <h2 class="section-title">關於我</h2>
+            <p class="section-desc">
+              用簡短的段落說明你是誰、你重視什麼、你能替別人解決什麼問題。想更完整認識我，請閱讀
+              <a class="link" href="about.html">自傳／關於我專頁</a>。
+            </p>
+          </header>
+
+          <div class="about-grid">
+            <div class="panel reveal">
+              <h3 class="panel-title">我在乎的事</h3>
+              <ul class="list">
+                <li>以 RAG 架構提升回應準確度與可靠性</li>
+                <li>透過 SOP 與資料分析持續優化效能</li>
+                <li>將複雜技術轉化為清楚易懂的溝通</li>
+              </ul>
+            </div>
+
+            <div class="panel reveal">
+              <h3 class="panel-title">我正在做什麼</h3>
+              <ul class="list">
+                <li>深化生成式 AI、Embedding 與檢索優化</li>
+                <li>精進 Unity（C#）與前端整合開發能力</li>
+                <li>持續累積實務專案與團隊協作經驗</li>
+              </ul>
+            </div>
+
+            <div class="panel reveal">
+              <h3 class="panel-title">一句話自我介紹</h3>
+              <p class="muted">
+                我是具備 RAG 開發實力與優化思維的資工人才，擅長把技術做成可落地、可持續改進的解決方案。
+              </p>
+              <div class="chips" aria-label="關鍵字">
+                <span class="chip">UI</span>
+                <span class="chip">UX</span>
+                <span class="chip">RWD</span>
+                <span class="chip">Performance</span>
+                <span class="chip">Accessibility</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="skills">
+        <div class="container">
+          <header class="section-head reveal">
+            <h2 class="section-title">技能</h2>
+            <p class="section-desc">你可以把這裡換成你真正會的工具與熟練度。</p>
+          </header>
+
+          <div class="skills-grid">
+            <article class="skill-card reveal">
+              <h3>HTML</h3>
+              <p class="muted">語意化標籤、SEO 基礎、可及性友善。</p>
+              <div class="meter" role="img" aria-label="熟練度 85%">
+                <span style="width: 85%"></span>
+              </div>
+            </article>
+
+            <article class="skill-card reveal">
+              <h3>CSS</h3>
+              <p class="muted">Flex/Grid、RWD、動畫、設計系統。</p>
+              <div class="meter" role="img" aria-label="熟練度 80%">
+                <span style="width: 80%"></span>
+              </div>
+            </article>
+
+            <article class="skill-card reveal">
+              <h3>JavaScript</h3>
+              <p class="muted">DOM、事件、資料處理、模組化思維。</p>
+              <div class="meter" role="img" aria-label="熟練度 75%">
+                <span style="width: 75%"></span>
+              </div>
+            </article>
+
+            <article class="skill-card reveal">
+              <h3>工具</h3>
+              <p class="muted">Git（可選）、VS Code、瀏覽器 DevTools。</p>
+              <div class="chips" aria-label="工具">
+                <span class="chip">DevTools</span>
+                <span class="chip">Figma</span>
+                <span class="chip">Git</span>
+                <span class="chip">Node</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="projects">
+        <div class="container">
+          <header class="section-head reveal">
+            <h2 class="section-title">作品</h2>
+            <p class="section-desc">
+              放 3–6 個你最想被看到的作品，並用一句話說清楚亮點。
+            </p>
+          </header>
+
+          <div class="projects-grid">
+            <article class="project-card reveal" data-project-id="a">
+              <div class="project-top">
+                <h3 class="project-title">作品 A：個人網站</h3>
+                <p class="project-desc muted">
+                  單頁式簡介網站，包含深色模式、RWD、滑動動畫。
+                </p>
+              </div>
+              <ul class="project-tags" aria-label="標籤">
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JS</li>
+              </ul>
+              <div class="project-actions">
+                <a class="btn btn-small btn-primary" href="#" aria-disabled="true">Demo</a>
+                <a class="btn btn-small btn-ghost" href="#" aria-disabled="true">GitHub</a>
+                <button class="btn btn-small btn-ghost" type="button" data-project-open>
+                  詳情
+                </button>
+              </div>
+            </article>
+
+            <article class="project-card reveal" data-project-id="b">
+              <div class="project-top">
+                <h3 class="project-title">作品 B：待辦清單 Web App</h3>
+                <p class="project-desc muted">
+                  完整 CRUD、LocalStorage 持久化、全部／進行中／已完成篩選、依建立時間排序、雙擊編輯與空狀態提示。
+                </p>
+              </div>
+              <ul class="project-tags" aria-label="標籤">
+                <li>JavaScript</li>
+                <li>LocalStorage</li>
+                <li>DOM</li>
+                <li>UX</li>
+              </ul>
+              <div class="project-actions">
+                <a class="btn btn-small btn-primary" href="todo-app.html">Demo</a>
+                <a class="btn btn-small btn-ghost" href="#" aria-disabled="true">GitHub</a>
+                <button class="btn btn-small btn-ghost" type="button" data-project-open>
+                  詳情
+                </button>
+              </div>
+            </article>
+
+            <article class="project-card reveal" data-project-id="c">
+              <div class="project-top">
+                <h3 class="project-title">作品 C：資料視覺化儀表板</h3>
+                <p class="project-desc muted">
+                  Fetch 取得 JSONPlaceholder 文章、Chart.js 長條圖統計各使用者發文數，含載入中、錯誤重試與空資料示範。
+                </p>
+              </div>
+              <ul class="project-tags" aria-label="標籤">
+                <li>Fetch</li>
+                <li>Chart.js</li>
+                <li>REST API</li>
+                <li>UX</li>
+              </ul>
+              <div class="project-actions">
+                <a class="btn btn-small btn-primary" href="data-viz.html">Demo</a>
+                <a class="btn btn-small btn-ghost" href="#" aria-disabled="true">GitHub</a>
+                <button class="btn btn-small btn-ghost" type="button" data-project-open>
+                  詳情
+                </button>
+              </div>
+            </article>
+
+            <article class="project-card reveal" data-project-id="games">
+              <div class="project-top">
+                <h3 class="project-title">Python小遊戲集</h3>
+                <p class="project-desc muted">
+                  使用Python實現的經典小遊戲：踩地雷、井字遊戲、打磚塊，展示程式邏輯與互動設計。
+                </p>
+              </div>
+              <ul class="project-tags" aria-label="標籤">
+                <li>Python</li>
+                <li>Pyodide</li>
+                <li>遊戲邏輯</li>
+              </ul>
+              <div class="project-actions">
+                <a class="btn btn-small btn-primary" href="games.html">玩遊戲</a>
+                <a class="btn btn-small btn-ghost" href="#" aria-disabled="true">GitHub</a>
+                <button class="btn btn-small btn-ghost" type="button" data-project-open>
+                  詳情
+                </button>
+              </div>
+            </article>
+
+            <article class="project-card reveal" data-project-id="unity">
+              <div class="project-top">
+                <h3 class="project-title">Unity 2D 冒險遊戲</h3>
+                <p class="project-desc muted">
+                  使用 Unity 引擎開發的 2D 冒險遊戲。
+                </p>
+              </div>
+              <ul class="project-tags" aria-label="標籤">
+                <li>Unity</li>
+                <li>2D</li>
+                <li>C#</li>
+              </ul>
+              <div class="project-actions">
+                <a class="btn btn-small btn-primary" href="unity-game/index.html">作品頁</a>
+                <a class="btn btn-small btn-ghost" href="#" aria-disabled="true">GitHub</a>
+                <button class="btn btn-small btn-ghost" type="button" data-project-open>
+                  詳情
+                </button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="timeline">
+        <div class="container">
+          <header class="section-head reveal">
+            <h2 class="section-title">經歷</h2>
+            <p class="section-desc">把學校、社團、比賽、實習或專案經驗放在這裡。</p>
+          </header>
+
+          <ol class="timeline">
+            <li class="timeline-item reveal">
+              <div class="timeline-dot" aria-hidden="true"></div>
+              <div class="timeline-body">
+                <div class="timeline-head">
+                  <h3>專案／活動名稱</h3>
+                  <span class="muted">2025 — 2026</span>
+                </div>
+                <p class="muted">
+                  描述你做了什麼、用到什麼技術、產出什麼成果（量化更好）。
+                </p>
+              </div>
+            </li>
+            <li class="timeline-item reveal">
+              <div class="timeline-dot" aria-hidden="true"></div>
+              <div class="timeline-body">
+                <div class="timeline-head">
+                  <h3>學習里程碑</h3>
+                  <span class="muted">2024 — 2025</span>
+                </div>
+                <p class="muted">
+                  例如：完成某門課、做出某個作品、參加某個競賽或社群活動。
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section" id="contact">
+        <div class="container">
+          <header class="section-head reveal">
+            <h2 class="section-title">聯絡我</h2>
+            <p class="section-desc">把連結換成你的 Email／GitHub／LinkedIn／IG。</p>
+          </header>
+
+          <div class="contact-grid">
+            <div class="panel reveal">
+              <h3 class="panel-title">快速聯絡</h3>
+              <p class="muted">
+                Email：<a class="link" href="mailto:yourname@example.com">yourname@example.com</a>
+              </p>
+              <p class="muted">如果你提供需求與時程，我可以回覆估時與建議方案。</p>
+              <div class="contact-actions">
+                <a class="btn btn-primary" href="mailto:yourname@example.com">寄信給我</a>
+                <button class="btn btn-ghost" type="button" data-copy-email>
+                  複製 Email
+                </button>
+              </div>
+              <p class="toast" role="status" aria-live="polite" hidden>已複製到剪貼簿</p>
+            </div>
+
+            <div class="panel reveal">
+              <h3 class="panel-title">社群</h3>
+              <ul class="social">
+                <li>
+                  <a class="link" href="#" aria-disabled="true">GitHub</a>
+                </li>
+                <li>
+                  <a class="link" href="#" aria-disabled="true">LinkedIn</a>
+                </li>
+                <li>
+                  <a class="link" href="#" aria-disabled="true">Instagram</a>
+                </li>
+              </ul>
+              <p class="muted">提示：如果你沒有社群，也可以放作品 Demo 或雲端履歷。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div
+        class="modal"
+        id="project-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-modal-title"
+        hidden
+      >
+        <div class="modal-backdrop" data-modal-close></div>
+        <div class="modal-card" role="document">
+          <div class="modal-head">
+            <h3 class="modal-title" id="project-modal-title">作品詳情</h3>
+            <button class="btn btn-small btn-ghost" type="button" data-modal-close>
+              關閉
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="muted" id="project-modal-desc"></p>
+            <div class="modal-meta" id="project-modal-meta"></div>
+          </div>
+          <div class="modal-actions" id="project-modal-actions"></div>
+        </div>
+      </div>
+
+      <button class="back-to-top" type="button" aria-label="回到頁首" hidden>
+        ↑
+      </button>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p class="muted">© <span data-year></span> 你的名字. All rights reserved.</p>
+        <p class="muted">
+          Built with <span aria-hidden="true">HTML · CSS · JS</span
+          ><span class="sr-only">HTML、CSS、JavaScript</span>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

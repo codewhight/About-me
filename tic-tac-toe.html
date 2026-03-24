@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="井字遊戲 - Python小遊戲集"
+    />
+    <title>井字遊戲 - Python小遊戲集</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./script.js"></script>
+    <style>
+      :root{
+        --bg: #0b1020;
+        --card: rgba(255,255,255,0.06);
+        --card2: rgba(255,255,255,0.08);
+        --text: rgba(255,255,255,0.92);
+        --muted: rgba(255,255,255,0.72);
+        --border: rgba(255,255,255,0.14);
+        --shadow: 0 18px 60px rgba(0,0,0,0.35);
+        --accent: #7c5cff;
+        --accent2: #2dd4bf;
+        --danger: #ff4d6d;
+        --cell: rgba(255,255,255,0.06);
+        --cellHover: rgba(255,255,255,0.10);
+        --cellWin: rgba(45,212,191,0.22);
+      }
+      .tic-tac-toe-container {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 28px 18px 22px;
+      }
+      .tic-tac-toe-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 16px;
+      }
+      .tic-tac-toe-title {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: 0.5px;
+      }
+      .tic-tac-toe-subtitle {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .tic-tac-toe-controls {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .tic-tac-toe-field {
+        display: grid;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .tic-tac-toe-fieldLabel { padding-left: 2px; }
+      .tic-tac-toe-select {
+        appearance: none;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: #000;
+        outline: none;
+        min-width: 150px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      }
+      .tic-tac-toe-select option {
+        color: #000;
+        background: #fff;
+      }
+      .tic-tac-toe-select:focus {
+        border-color: rgba(124,92,255,0.7);
+        box-shadow: 0 0 0 3px rgba(124,92,255,0.25);
+      }
+      .tic-tac-toe-btn {
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(124,92,255,0.55);
+        background: linear-gradient(135deg, rgba(124,92,255,0.95), rgba(124,92,255,0.55));
+        color: white;
+        cursor: pointer;
+        font-weight: 650;
+        letter-spacing: 0.3px;
+        box-shadow: var(--shadow);
+      }
+      .tic-tac-toe-btn:hover { filter: brightness(1.04); }
+      .tic-tac-toe-btn:active { transform: translateY(1px); }
+      .tic-tac-toe-main {
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 16px;
+      }
+      .tic-tac-toe-boardCard, .tic-tac-toe-panel {
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+      }
+      .tic-tac-toe-boardCard { padding: 16px; }
+      .tic-tac-toe-status {
+        min-height: 24px;
+        font-size: 14px;
+        color: var(--muted);
+        margin: 2px 0 14px;
+      }
+      .tic-tac-toe-status strong { color: var(--text); }
+      .tic-tac-toe-board {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .tic-tac-toe-cell {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--cell);
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        font-size: clamp(44px, 8vw, 66px);
+        font-weight: 850;
+        letter-spacing: 1px;
+        user-select: none;
+        transition: background 120ms ease, transform 120ms ease, border-color 120ms ease;
+      }
+      .tic-tac-toe-cell:hover {
+        background: var(--cellHover);
+        transform: translateY(-1px);
+      }
+      .tic-tac-toe-cell:active { transform: translateY(0px) scale(0.99); }
+      .tic-tac-toe-cell[disabled] {
+        cursor: not-allowed;
+        opacity: 0.92;
+      }
+      .tic-tac-toe-cell.x { color: rgba(124,92,255,0.98); }
+      .tic-tac-toe-cell.o { color: rgba(45,212,191,0.98); }
+      .tic-tac-toe-cell.win {
+        background: var(--cellWin);
+        border-color: rgba(45,212,191,0.55);
+      }
+      .tic-tac-toe-side { align-self: start; }
+      .tic-tac-toe-panel {
+        padding: 14px 14px 12px;
+      }
+      .tic-tac-toe-panelTitle {
+        font-weight: 750;
+        margin-bottom: 10px;
+        letter-spacing: 0.2px;
+      }
+      .tic-tac-toe-tips {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .tic-tac-toe-footer {
+        margin-top: 14px;
+        color: rgba(255,255,255,0.62);
+        font-size: 12px;
+      }
+      @media (max-width: 860px) {
+        .tic-tac-toe-header { flex-direction: column; align-items: stretch; }
+        .tic-tac-toe-main { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas class="fx-canvas" aria-hidden="true"></canvas>
+    <div class="cursor-glow" aria-hidden="true"></div>
+    <div class="scroll-progress" aria-hidden="true">
+      <div class="scroll-progress-bar"></div>
+    </div>
+
+    <a class="skip-link" href="#content">跳到主要內容</a>
+
+    <header class="site-header" id="top">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="回到首頁">
+          <span class="brand-mark" aria-hidden="true">◆</span>
+          <span class="brand-text">你的名字</span>
+        </a>
+
+        <nav class="nav" aria-label="主要導覽">
+          <button
+            class="nav-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="nav-menu"
+          >
+            <span class="nav-toggle-icon" aria-hidden="true"></span>
+            <span class="sr-only">開啟/關閉選單</span>
+          </button>
+          <div class="nav-menu" id="nav-menu">
+            <a class="nav-link" href="about.html">關於我</a>
+            <a class="nav-link" href="index.html#skills">技能</a>
+            <a class="nav-link" href="index.html#projects">作品</a>
+            <a class="nav-link" href="index.html#timeline">經歷</a>
+            <a class="nav-link" href="index.html#contact">聯絡</a>
+            <a class="nav-link" href="games.html">遊戲集</a>
+          </div>
+        </nav>
+
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" aria-label="切換深色模式">
+            <span class="theme-toggle-icon" aria-hidden="true"></span>
+          </button>
+          <a class="btn btn-primary" href="index.html#contact">合作邀約</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="content">
+      <section class="hero section">
+        <div class="container">
+          <div class="hero-copy reveal">
+            <h1 class="hero-title">
+              井字遊戲
+            </h1>
+            <p class="hero-subtitle">
+              經典二人對戰遊戲，先連成一線者獲勝。支援雙人模式與單人對電腦模式（Minimax 演算法）。
+            </p>
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="#game-area">開始遊戲</a>
+              <a class="btn btn-ghost" href="games.html">回到遊戲集</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="game-instructions">
+            <h3>遊戲說明</h3>
+            <ul>
+              <li>兩位玩家輪流在3x3格子上放置符號</li>
+              <li>X先手，O後手</li>
+              <li>先連成一條直線（橫、豎、斜）者獲勝</li>
+              <li>如果格子填滿仍無勝負則為平手</li>
+              <li>支援雙人模式與單人對電腦模式（電腦使用 Minimax 演算法）</li>
+            </ul>
+          </div>
+
+          <div class="tic-tac-toe-container">
+            <header class="tic-tac-toe-header">
+              <div>
+                <h2 class="tic-tac-toe-title">井字遊戲</h2>
+                <p class="tic-tac-toe-subtitle">雙人 / 單人對電腦（Minimax 零總和）</p>
+              </div>
+              <div class="tic-tac-toe-controls">
+                <label class="tic-tac-toe-field">
+                  <span class="tic-tac-toe-fieldLabel">模式</span>
+                  <select id="mode" class="tic-tac-toe-select">
+                    <option value="pvp">雙人遊玩</option>
+                    <option value="cpu">單人對電腦</option>
+                  </select>
+                </label>
+
+                <label class="tic-tac-toe-field" id="humanMarkField">
+                  <span class="tic-tac-toe-fieldLabel">你使用</span>
+                  <select id="humanMark" class="tic-tac-toe-select">
+                    <option value="X">X（先手）</option>
+                    <option value="O">O（後手）</option>
+                  </select>
+                </label>
+
+                <button id="reset" class="tic-tac-toe-btn" type="button">重新開始</button>
+              </div>
+            </header>
+
+            <main class="tic-tac-toe-main">
+              <section class="tic-tac-toe-boardCard">
+                <div id="status" class="tic-tac-toe-status" aria-live="polite"></div>
+                <div id="board" class="tic-tac-toe-board" role="grid" aria-label="井字棋盤"></div>
+              </section>
+
+              <aside class="tic-tac-toe-side">
+                <div class="tic-tac-toe-panel">
+                  <div class="tic-tac-toe-panelTitle">操作說明</div>
+                  <ul class="tic-tac-toe-tips">
+                    <li>雙人模式：輪流下 X / O。</li>
+                    <li>電腦模式：電腦使用 Minimax（零總和）計算最佳步，不隨機。</li>
+                    <li>你可切換你使用的符號（X 先手 / O 後手）。</li>
+                  </ul>
+                </div>
+              </aside>
+            </main>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p class="footer-copyright">
+          © <span id="year"></span> 你的名字. All rights reserved.
+        </p>
+        <a class="footer-back-top" href="#top" aria-label="回到頁首">
+          <span aria-hidden="true">↑</span>
+        </a>
+      </div>
+    </footer>
+
+    <script>
+      (() => {
+        const LINES = [
+          [0, 1, 2],
+          [3, 4, 5],
+          [6, 7, 8],
+          [0, 3, 6],
+          [1, 4, 7],
+          [2, 5, 8],
+          [0, 4, 8],
+          [2, 4, 6],
+        ];
+
+        const $ = (id) => document.getElementById(id);
+        const modeEl = $("mode");
+        const humanMarkEl = $("humanMark");
+        const humanMarkFieldEl = $("humanMarkField");
+        const resetEl = $("reset");
+        const boardEl = $("board");
+        const statusEl = $("status");
+
+        let board = Array(9).fill(null);
+        let current = "X";
+        let gameOver = false;
+        let mode = "pvp"; // 'pvp' | 'cpu'
+
+        const state = () => {
+          const human = humanMarkEl.value;
+          const cpu = human === "X" ? "O" : "X";
+          return { human, cpu };
+        };
+
+        function emptyIndices(b) {
+          const out = [];
+          for (let i = 0; i < b.length; i++) if (!b[i]) out.push(i);
+          return out;
+        }
+
+        function winnerOf(b) {
+          for (const [a, c, d] of LINES) {
+            if (b[a] && b[a] === b[c] && b[a] === b[d]) {
+              return { winner: b[a], line: [a, c, d] };
+            }
+          }
+          if (emptyIndices(b).length === 0) return { winner: "draw", line: null };
+          return { winner: null, line: null };
+        }
+
+        function setStatus(html) {
+          statusEl.innerHTML = html;
+        }
+
+        function render(result = null) {
+          boardEl.innerHTML = "";
+          const winningLine = result?.line ?? null;
+
+          for (let i = 0; i < 9; i++) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "tic-tac-toe-cell";
+            btn.setAttribute("role", "gridcell");
+            btn.setAttribute("aria-label", `格子 ${i + 1}`);
+            btn.dataset.index = String(i);
+
+            const mark = board[i];
+            if (mark) {
+              btn.textContent = mark;
+              btn.classList.add(mark === "X" ? "x" : "o");
+            } else {
+              btn.textContent = "";
+            }
+
+            if (winningLine && winningLine.includes(i)) btn.classList.add("win");
+
+            const disableBecauseOver = gameOver;
+            const disableBecauseFilled = Boolean(mark);
+            const disableBecauseCpuTurn =
+              mode === "cpu" && !gameOver && current === state().cpu;
+
+            if (disableBecauseOver || disableBecauseFilled || disableBecauseCpuTurn) {
+              btn.disabled = true;
+            }
+
+            btn.addEventListener("click", onCellClick);
+            boardEl.appendChild(btn);
+          }
+        }
+
+        function announceTurn() {
+          if (gameOver) return;
+          if (mode === "cpu") {
+            const { human, cpu } = state();
+            const who = current === human ? "你" : "電腦";
+            setStatus(`輪到：<strong>${who}</strong>（${current}）`);
+            if (current === cpu) setStatus(`輪到：<strong>電腦</strong>（${current}）正在思考…`);
+          } else {
+            setStatus(`輪到：<strong>${current}</strong>`);
+          }
+        }
+
+        function endGame(result) {
+          gameOver = true;
+          if (result.winner === "draw") {
+            setStatus("結果：<strong>平手</strong>");
+            render(result);
+            return;
+          }
+
+          if (mode === "cpu") {
+            const { human } = state();
+            const msg = result.winner === human ? "你贏了" : "電腦贏了";
+            setStatus(`結果：<strong>${msg}</strong>（${result.winner}）`);
+          } else {
+            setStatus(`結果：<strong>${result.winner}</strong> 獲勝`);
+          }
+          render(result);
+        }
+
+        function placeAt(idx, mark) {
+          if (gameOver) return false;
+          if (board[idx]) return false;
+          board[idx] = mark;
+          const result = winnerOf(board);
+          if (result.winner) {
+            endGame(result);
+            return true;
+          }
+          current = current === "X" ? "O" : "X";
+          render();
+          announceTurn();
+          return true;
+        }
+
+        function onCellClick(e) {
+          const idx = Number(e.currentTarget.dataset.index);
+          if (!Number.isFinite(idx)) return;
+
+          if (mode === "cpu") {
+            const { human } = state();
+            if (current !== human) return;
+          }
+
+          const ok = placeAt(idx, current);
+          if (!ok) return;
+
+          if (mode === "cpu" && !gameOver) {
+            const { cpu } = state();
+            if (current === cpu) {
+              requestAnimationFrame(() => cpuMove());
+            }
+          }
+        }
+
+        // Zero-sum Minimax: CPU maximizes, Human minimizes.
+        function minimax(b, turn, cpu, human, depth, alpha, beta) {
+          const r = winnerOf(b);
+          if (r.winner) {
+            if (r.winner === cpu) return 10 - depth;
+            if (r.winner === human) return depth - 10;
+            return 0;
+          }
+
+          const empties = emptyIndices(b);
+
+          if (turn === cpu) {
+            let best = -Infinity;
+            for (const idx of empties) {
+              b[idx] = cpu;
+              const score = minimax(b, human, cpu, human, depth + 1, alpha, beta);
+              b[idx] = null;
+              if (score > best) best = score;
+              if (best > alpha) alpha = best;
+              if (beta <= alpha) break;
+            }
+            return best;
+          } else {
+            let best = Infinity;
+            for (const idx of empties) {
+              b[idx] = human;
+              const score = minimax(b, cpu, cpu, human, depth + 1, alpha, beta);
+              b[idx] = null;
+              if (score < best) best = score;
+              if (best < beta) beta = best;
+              if (beta <= alpha) break;
+            }
+            return best;
+          }
+        }
+
+        function bestMoveForCpu() {
+          const { human, cpu } = state();
+          let bestScore = -Infinity;
+          let bestIdx = null;
+
+          for (const idx of emptyIndices(board)) {
+            board[idx] = cpu;
+            const score = minimax(board, human, cpu, human, 0, -Infinity, Infinity);
+            board[idx] = null;
+
+            if (score > bestScore) {
+              bestScore = score;
+              bestIdx = idx;
+            }
+          }
+          return bestIdx;
+        }
+
+        function cpuMove() {
+          if (gameOver) return;
+          if (mode !== "cpu") return;
+          const { cpu } = state();
+          if (current !== cpu) return;
+
+          const idx = bestMoveForCpu();
+          if (idx == null) return;
+          placeAt(idx, cpu);
+        }
+
+        function resetGame({ keepMode = true } = {}) {
+          board = Array(9).fill(null);
+          current = "X";
+          gameOver = false;
+          if (!keepMode) mode = modeEl.value;
+          render();
+          announceTurn();
+
+          if (mode === "cpu") {
+            const { cpu } = state();
+            if (current === cpu) {
+              requestAnimationFrame(() => cpuMove());
+            }
+          }
+        }
+
+        function applyModeUI() {
+          mode = modeEl.value;
+          humanMarkFieldEl.style.display = mode === "cpu" ? "grid" : "none";
+        }
+
+        // Init
+        function initBoard() {
+          boardEl.setAttribute("aria-rowcount", "3");
+          boardEl.setAttribute("aria-colcount", "3");
+          applyModeUI();
+
+          modeEl.addEventListener("change", () => {
+            applyModeUI();
+            resetGame({ keepMode: false });
+          });
+
+          humanMarkEl.addEventListener("change", () => {
+            if (mode !== "cpu") return;
+            resetGame({ keepMode: true });
+          });
+
+          resetEl.addEventListener("click", () => resetGame({ keepMode: true }));
+          resetGame({ keepMode: false });
+        }
+
+        initBoard();
+      })();
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

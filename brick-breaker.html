@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="打磚塊遊戲 - Python小遊戲集"
+    />
+    <title>打磚塊 - Python小遊戲集</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./script.js"></script>
+  </head>
+
+  <body>
+    <canvas class="fx-canvas" aria-hidden="true"></canvas>
+    <div class="cursor-glow" aria-hidden="true"></div>
+    <div class="scroll-progress" aria-hidden="true">
+      <div class="scroll-progress-bar"></div>
+    </div>
+
+    <a class="skip-link" href="#content">跳到主要內容</a>
+
+    <header class="site-header" id="top">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="回到首頁">
+          <span class="brand-mark" aria-hidden="true">◆</span>
+          <span class="brand-text">你的名字</span>
+        </a>
+
+        <nav class="nav" aria-label="主要導覽">
+          <button
+            class="nav-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="nav-menu"
+          >
+            <span class="nav-toggle-icon" aria-hidden="true"></span>
+            <span class="sr-only">開啟/關閉選單</span>
+          </button>
+          <div class="nav-menu" id="nav-menu">
+            <a class="nav-link" href="about.html">關於我</a>
+            <a class="nav-link" href="index.html#skills">技能</a>
+            <a class="nav-link" href="index.html#projects">作品</a>
+            <a class="nav-link" href="index.html#timeline">經歷</a>
+            <a class="nav-link" href="index.html#contact">聯絡</a>
+            <a class="nav-link" href="games.html">遊戲集</a>
+          </div>
+        </nav>
+
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" aria-label="切換深色模式">
+            <span class="theme-toggle-icon" aria-hidden="true"></span>
+          </button>
+          <a class="btn btn-primary" href="index.html#contact">合作邀約</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="content">
+      <section class="hero section">
+        <div class="container">
+          <div class="hero-copy reveal">
+            <h1 class="hero-title">
+              打磚塊遊戲
+            </h1>
+            <p class="hero-subtitle">
+              經典街機遊戲，使用純JavaScript實現。使用鍵盤左右鍵控制球拍，將球打碎所有磚塊。
+            </p>
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="#game-area">開始遊戲</a>
+              <a class="btn btn-ghost" href="games.html">回到遊戲集</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="game-area">
+        <div class="container">
+          <div class="game-instructions">
+            <h3>遊戲說明</h3>
+            <ul>
+              <li>使用鍵盤左右鍵控制底部的球拍</li>
+              <li>擊打球撞破所有磚塊</li>
+              <li>避免讓球掉到螢幕下方</li>
+              <li>打破所有磚塊即可升級並贏得遊戲</li>
+            </ul>
+          </div>
+
+          <div class="game-controls" style="text-align:center; margin-bottom:1rem;">
+            <span>Score: <span id="score">0</span></span>
+            <span style="margin-left:1.5rem;">Level: <span id="level">1</span></span>
+            <div style="margin-top:1rem;">
+              <button id="rungame" class="btn btn-primary">開始遊戲</button>
+              <button id="newgame" class="btn btn-secondary">重新開始</button>
+              <button id="rules" class="btn btn-ghost">遊戲規則</button>
+              <a class="btn btn-ghost" href="games.html">回到遊戲集</a>
+            </div>
+          </div>
+
+          <div class="game-container" style="display:flex; justify-content:center;">
+            <canvas id="gamecanvas" width="500" height="350" style="border:1px solid #333;"></canvas>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p class="footer-copyright">
+          © <span id="year"></span> 你的名字. All rights reserved.
+        </p>
+        <a class="footer-back-top" href="#top" aria-label="回到頁首">
+          <span aria-hidden="true">↑</span>
+        </a>
+      </div>
+    </footer>
+
+    <script>
+      const canvas = document.getElementById('gamecanvas');
+      const ctx = canvas.getContext('2d');
+      const scoreElement = document.getElementById('score');
+      const levelElement = document.getElementById('level');
+      const rulesButton = document.getElementById('rules');
+      const newGameButton = document.getElementById('newgame');
+      const startGameButton = document.getElementById('rungame');
+
+      let intervalGame;
+      let flagBrick = false;
+      let flagover = false;
+      let speed = 10;
+      let level = 1;
+      let temp = 0;
+      let score = 0;
+
+      // Ball
+      let x = canvas.width / 2;
+      let y = 200;
+      const ballRadius = 10;
+      let num = (Math.random() * 4) + 1;
+      if (num > 2) num = 2 - num;
+      let dx = num;
+      let dy = 2;
+
+      // Paddle
+      let paddleHeight = 10;
+      let paddleWidth = 170;
+      let paddleX = (canvas.width - paddleWidth - 10 * score) / 2;
+
+      // Input
+      let rightPressed = false;
+      let leftPressed = false;
+
+      // Bricks
+      let brickRowCount;
+      let brickColumnCount;
+      let brickWidth = 60;
+      let brickHeight = 20;
+      let brickPadding = 10;
+      let brickOffsetTop = 30;
+      let brickOffsetLeft = 10;
+      let bricks = [];
+
+      document.addEventListener('keydown', keyDownHandler, false);
+      document.addEventListener('keyup', keyUpHandler, false);
+
+      startGameButton.addEventListener('click', () => {
+        startGameButton.disabled = true;
+        rulesButton.disabled = true;
+        newGameButton.disabled = true;
+        startGame();
+      });
+
+      newGameButton.addEventListener('click', () => {
+        clearInterval(intervalGame);
+        setGame();
+        startGameButton.disabled = false;
+        rulesButton.disabled = false;
+      });
+
+      rulesButton.addEventListener('click', () => {
+        rule();
+      });
+
+      function keyDownHandler(e) {
+        if (e.key === 'Right' || e.key === 'ArrowRight') {
+          rightPressed = true;
+        } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
+          leftPressed = true;
+        }
+      }
+
+      function keyUpHandler(e) {
+        if (e.key === 'Right' || e.key === 'ArrowRight') {
+          rightPressed = false;
+        } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
+          leftPressed = false;
+        }
+      }
+
+      function drawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+        ctx.fillStyle = '#009500';
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      function drawPaddle() {
+        ctx.beginPath();
+        const currentWidth = paddleWidth - 10 * temp;
+        const drawWidth = currentWidth > 100 ? currentWidth : 100;
+        ctx.rect(paddleX, canvas.height - paddleHeight, drawWidth, paddleHeight);
+        ctx.fillStyle = '#0095DD';
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      function drawBricks() {
+        if (!flagBrick) {
+          for (let c = 0; c < brickColumnCount; c++) {
+            for (let r = 0; r < brickRowCount; r++) {
+              if (bricks[c][r].status === 1) {
+                let brickX;
+                let brickY;
+                if (c % 2 === 0) {
+                  brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+                  brickY = r * (brickHeight + brickPadding) + brickOffsetTop + (r % 2 === 1 ? 0 : 120);
+                } else {
+                  brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+                  brickY = r * (brickHeight + brickPadding) + brickOffsetTop + (r % 2 === 1 ? 50 : -20);
+                }
+                bricks[c][r].x = brickX;
+                bricks[c][r].y = brickY;
+                ctx.beginPath();
+                ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                ctx.fillStyle = '#DD95DD';
+                ctx.fill();
+                ctx.closePath();
+              }
+            }
+          }
+        } else {
+          for (let c = 0; c < brickColumnCount; c++) {
+            for (let r = 0; r < brickRowCount; r++) {
+              if (bricks[c][r].status === 1) {
+                const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+                const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+                bricks[c][r].x = brickX;
+                bricks[c][r].y = brickY;
+                ctx.beginPath();
+                ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                ctx.fillStyle = '#DD95DD';
+                ctx.fill();
+                ctx.closePath();
+              }
+            }
+          }
+        }
+      }
+
+      function collisionDetection() {
+        for (let c = 0; c < brickColumnCount; c++) {
+          for (let r = 0; r < brickRowCount; r++) {
+            const b = bricks[c][r];
+            if (b.status === 1) {
+              if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+                dy = -dy;
+                b.status = 0;
+                temp++;
+                score++;
+                scoreElement.textContent = score;
+                if (temp === brickRowCount * brickColumnCount) {
+                  levelUp();
+                  temp = 0;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      function play() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        drawPaddle();
+        collisionDetection();
+        drawBricks();
+
+        if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+          dx = -dx;
+        }
+
+        if (y + dy < ballRadius) {
+          dy = -dy;
+        } else if (y + dy > canvas.height - ballRadius) {
+          const paddleCurrentWidth = paddleWidth - 10 * temp;
+          const effectivePaddleWidth = paddleCurrentWidth > 100 ? paddleCurrentWidth : 100;
+          if (x > paddleX && x < paddleX + effectivePaddleWidth) {
+            dy = -dy;
+          } else {
+            flagover = true;
+          }
+        }
+
+        if (flagover) {
+          gameOver();
+          clearInterval(intervalGame);
+        }
+
+        if (rightPressed) {
+          const limit = canvas.width - (paddleWidth - 10 * temp > 100 ? paddleWidth - 10 * temp : 100);
+          paddleX = Math.min(paddleX + 7, limit);
+        } else if (leftPressed) {
+          paddleX = Math.max(paddleX - 7, 0);
+        }
+
+        x += dx;
+        y += dy;
+      }
+
+      function startGame() {
+        clearInterval(intervalGame);
+        intervalGame = setInterval(play, 10);
+      }
+
+      function gameOver() {
+        ctx.beginPath();
+        ctx.font = 'bold 60px Arial';
+        ctx.fillStyle = '#000000';
+        ctx.textAlign = 'center';
+        ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
+        ctx.closePath();
+        newGameButton.disabled = false;
+        rulesButton.disabled = false;
+        clearInterval(intervalGame);
+      }
+
+      function setGame() {
+        flagover = false;
+        flagBrick = false;
+        x = canvas.width / 2;
+        y = 200;
+        score = 0;
+        temp = 0;
+        level = 1;
+        speed = 10;
+        scoreElement.textContent = score;
+        levelElement.textContent = level;
+        levelSet();
+      }
+
+      function levelSet() {
+        num = (Math.random() * 4) + 1;
+        if (num > 2) num = 2 - num;
+        dx = num;
+
+        if (level % 3 === 1) {
+          flagBrick = false;
+          brickOffsetLeft = 30;
+          brickRowCount = 3;
+          brickColumnCount = 5;
+          brickPadding = 10;
+          brickWidth = 80;
+        } else if (level % 3 === 2) {
+          brickOffsetLeft = 20;
+          brickRowCount = 5;
+          brickColumnCount = 7;
+          brickPadding = 10;
+          brickWidth = 57;
+        } else {
+          brickOffsetLeft = 30;
+          brickRowCount = 2;
+          brickColumnCount = 6;
+          brickPadding = 3;
+          brickWidth = 65;
+          flagBrick = true;
+        }
+
+        bricks = [];
+        for (let c = 0; c < brickColumnCount; c++) {
+          bricks[c] = [];
+          for (let r = 0; r < brickRowCount; r++) {
+            bricks[c][r] = { x: 0, y: 0, status: 1 };
+          }
+        }
+      }
+
+      function levelUp() {
+        x = canvas.width / 2;
+        y = 200;
+        level++;
+        levelElement.textContent = level;
+        levelSet();
+      }
+
+      function rule() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = 'bold 30px Arial';
+        ctx.fillStyle = '#000000';
+        ctx.textAlign = 'center';
+        ctx.fillText('遊戲方式', canvas.width / 2, 30);
+
+        let text1Width = ctx.measureText('透過左右鍵控制下方').width;
+        let text2Width = ctx.measureText('藍色薄板').width;
+        let totalWidth = text1Width + text2Width;
+        let startX = (canvas.width - totalWidth) / 2;
+
+        ctx.fillStyle = '#000000';
+        ctx.fillText('透過左右鍵控制下方', startX + text1Width / 2, 90);
+        ctx.fillStyle = '#0095DD';
+        ctx.fillText('藍色薄板', startX + text1Width + text2Width / 2, 90);
+
+        text1Width = ctx.measureText('擊打').width;
+        text2Width = ctx.measureText('綠色小球').width;
+        let text3Width = ctx.measureText('破壞').width;
+        let text4Width = ctx.measureText('粉色磚塊').width;
+        totalWidth = text1Width + text2Width + text3Width + text4Width;
+        startX = (canvas.width - totalWidth) / 2;
+
+        ctx.fillStyle = '#000000';
+        ctx.fillText('擊打', startX + text1Width / 2, 150);
+        ctx.fillStyle = '#009500';
+        ctx.fillText('綠色小球', startX + text1Width + text2Width / 2, 150);
+        ctx.fillStyle = '#000000';
+        ctx.fillText('破壞', startX + text1Width + text2Width + text3Width / 2, 150);
+        ctx.fillStyle = '#DD95DD';
+        ctx.fillText('粉色磚塊', startX + text1Width + text2Width + text3Width + text4Width / 2, 150);
+
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2 - 80, 170, 10, 0, Math.PI * 2);
+        ctx.fillStyle = '#009500';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.rect(canvas.width / 2 + 80, 160, 60, 10);
+        ctx.fillStyle = '#DD95DD';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle = '#000000';
+        text1Width = ctx.measureText('避免').width;
+        text2Width = ctx.measureText('綠色小球').width;
+        text3Width = ctx.measureText('碰到下方邊緣').width;
+        totalWidth = ctx.measureText('避免綠色小球碰到下方邊緣').width;
+        startX = (canvas.width - totalWidth) / 2;
+
+        ctx.fillText('避免', startX + text1Width / 2, 210);
+        ctx.fillStyle = '#009500';
+        ctx.fillText('綠色小球', startX + text1Width + text2Width / 2, 210);
+        ctx.fillStyle = '#000000';
+        ctx.fillText('碰到下方邊緣', startX + text1Width + text2Width + text3Width / 2, 210);
+      }
+
+      // 初始化
+      setGame();
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
