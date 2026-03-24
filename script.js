@@ -11,7 +11,7 @@
   const typeRotateEl = document.querySelector(".type-rotate");
   const projectModal = document.getElementById("project-modal");
 
-  const EMAIL = "yourname@example.com";
+  const EMAIL = "linyan071319@gmail.com";
   const STORAGE_KEY = "profile_theme";
   const prefersReducedMotion = () =>
     window.matchMedia &&
