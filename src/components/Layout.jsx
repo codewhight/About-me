@@ -41,16 +41,16 @@ export default function Layout({ children }) {
 
             <div className="nav-menu" id="nav-menu">
               <Link className="nav-link" to="/about.html">關於我</Link>
-              <a className="nav-link" href="/#skills" data-scrollspy>技能</a>
-              <a className="nav-link" href="/#projects" data-scrollspy>作品</a>
-              <a className="nav-link" href="/#timeline" data-scrollspy>經歷</a>
-              <a className="nav-link" href="/#contact" data-scrollspy>聯絡</a>
+              <a className="nav-link" href={`${import.meta.env.BASE_URL}#skills`} data-scrollspy>技能</a>
+              <a className="nav-link" href={`${import.meta.env.BASE_URL}#projects`} data-scrollspy>作品</a>
+              <a className="nav-link" href={`${import.meta.env.BASE_URL}#timeline`} data-scrollspy>經歷</a>
+              <a className="nav-link" href={`${import.meta.env.BASE_URL}#contact`} data-scrollspy>聯絡</a>
             </div>
           </nav>
 
           <div className="header-actions">
 
-            <a className="btn btn-primary" href="/#contact">合作邀約</a>
+            <a className="btn btn-primary" href={`${import.meta.env.BASE_URL}#contact`}>合作邀約</a>
           </div>
         </div>
       </header>

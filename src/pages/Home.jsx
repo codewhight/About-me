@@ -253,7 +253,7 @@ export default function Home() {
                 <li>遊戲邏輯</li>
               </ul>
               <div className="project-actions">
-                <a className="btn btn-small btn-primary" href="/games.html">玩遊戲</a>
+                <a className="btn btn-small btn-primary" href={`${import.meta.env.BASE_URL}games.html`}>玩遊戲</a>
                 <a className="btn btn-small btn-ghost" href="#" aria-disabled="true">GitHub</a>
                 <button className="btn btn-small btn-ghost" type="button" data-project-open="true">
                   詳情
@@ -296,7 +296,7 @@ export default function Home() {
                 <li>彈幕</li>
               </ul>
               <div className="project-actions">
-                <a className="btn btn-small btn-primary" href="/unity-game/index.html">作品頁</a>
+                <a className="btn btn-small btn-primary" href={`${import.meta.env.BASE_URL}unity-game/index.html`}>作品頁</a>
                 <a className="btn btn-small btn-ghost" href="#" aria-disabled="true">GitHub</a>
                 <button className="btn btn-small btn-ghost" type="button" data-project-open="true">
                   詳情
