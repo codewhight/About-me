@@ -1,0 +1,25 @@
+{
+  "name": "interactive_web_programming",
+  "version": "1.0.0",
+  "description": "此專案為單頁個人簡介網站（靜態網頁：HTML / CSS / JavaScript），後續擴充了多款網頁小遊戲與功能展示。",
+  "main": "chess-game.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chart.js": "^4.5.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^6.30.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "vite": "^5.4.21"
+  }
+}

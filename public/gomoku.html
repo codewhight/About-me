@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="五子棋遊戲（Gomoku）" />
+    <title>五子棋｜棋類遊戲</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./script.js"></script>
+    <style>
+      .gomoku-wrap { max-width: 980px; margin: 0 auto; }
+      .gomoku-layout { display: grid; grid-template-columns: 1fr 320px; gap: 14px; }
+      .gomoku-board {
+        display: grid;
+        grid-template-columns: repeat(15, 1fr);
+        gap: 4px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 10px;
+        background: var(--panel);
+      }
+      .gomoku-cell {
+        aspect-ratio: 1 / 1;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.04);
+        position: relative;
+        cursor: pointer;
+      }
+      .gomoku-cell:hover { background: rgba(124, 92, 255, 0.14); }
+      .gomoku-cell.win { box-shadow: inset 0 0 0 2px rgba(45, 212, 191, 0.85); }
+      .gomoku-disc {
+        position: absolute;
+        inset: 16%;
+        border-radius: 999px;
+      }
+      .gomoku-disc.black { background: #0f172a; }
+      .gomoku-disc.white { background: #f8fafc; }
+      .gomoku-panel { border: 1px solid var(--border); border-radius: 16px; background: var(--panel); padding: 12px; }
+      .gomoku-status { margin: 0 0 10px; color: var(--muted); min-height: 24px; }
+      .gomoku-controls { display: grid; gap: 8px; margin-bottom: 12px; }
+      .gomoku-field { display: grid; gap: 4px; color: var(--muted); font-size: 12px; }
+      .gomoku-select {
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: #000;
+      }
+      .gomoku-switch {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      @media (max-width: 980px) { .gomoku-layout { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <canvas class="fx-canvas" aria-hidden="true"></canvas>
+    <div class="cursor-glow" aria-hidden="true"></div>
+    <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-bar"></div></div>
+    <a class="skip-link" href="#content">跳到主要內容</a>
+    <header class="site-header" id="top">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="回到首頁">
+          <span class="brand-mark" aria-hidden="true">◆</span>
+          <span class="brand-text">林彥廷</span>
+        </a>
+        <nav class="nav" aria-label="主要導覽">
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+            <span class="nav-toggle-icon" aria-hidden="true"></span>
+            <span class="sr-only">開啟/關閉選單</span>
+          </button>
+          <div class="nav-menu" id="nav-menu">
+            <a class="nav-link" href="index.html#projects">作品</a>
+            <a class="nav-link" href="board-games.html">棋類遊戲</a>
+            <a class="nav-link" href="games.html">遊戲集</a>
+          </div>
+        </nav>
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" aria-label="切換深色模式">
+            <span class="theme-toggle-icon" aria-hidden="true"></span>
+          </button>
+          <a class="btn btn-primary" href="index.html#contact">合作邀約</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="content">
+      <section class="hero section">
+        <div class="container">
+          <div class="hero-copy reveal">
+            <h1 class="hero-title">五子棋（Gomoku）</h1>
+            <p class="hero-subtitle">支援雙人與 AI 對戰，提供悔棋與黑棋禁手規則（進階：長連、雙三、雙四）。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container gomoku-wrap">
+          <div class="gomoku-layout">
+            <section class="panel reveal">
+              <p class="gomoku-status" id="status" aria-live="polite"></p>
+              <div class="gomoku-board" id="board"></div>
+            </section>
+            <aside class="gomoku-panel reveal">
+              <div class="gomoku-controls">
+                <label class="gomoku-field">
+                  <span>模式</span>
+                  <select id="mode" class="gomoku-select">
+                    <option value="pvp">雙人遊玩</option>
+                    <option value="ai">對戰 AI（你執黑）</option>
+                  </select>
+                </label>
+                <label class="gomoku-switch">
+                  <input id="forbidToggle" type="checkbox" checked />
+                  啟用黑棋禁手規則（進階）
+                </label>
+              </div>
+              <h3 class="panel-title">操作</h3>
+              <ul class="list">
+                <li>黑子先手、白子後手。</li>
+                <li>橫、直、斜任一方向連五即獲勝。</li>
+                <li>禁手開啟時，黑棋不可下出長連／雙三／雙四。</li>
+              </ul>
+              <div style="margin-top: 12px; display: grid; gap: 8px;">
+                <button class="btn btn-primary" id="restartBtn" type="button">重新開始</button>
+                <button class="btn btn-ghost" id="undoBtn" type="button">悔棋</button>
+                <a class="btn btn-ghost" href="board-games.html">回棋類遊戲</a>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p class="muted">© <span data-year></span> 林彥廷. All rights reserved.</p>
+      </div>
+    </footer>
+    <script>
+      (() => {
+        const SIZE = 15;
+        const EMPTY = null;
+        const BLACK = "black";
+        const WHITE = "white";
+        const boardEl = document.getElementById("board");
+        const statusEl = document.getElementById("status");
+        const restartBtn = document.getElementById("restartBtn");
+        const undoBtn = document.getElementById("undoBtn");
+        const modeEl = document.getElementById("mode");
+        const forbidToggleEl = document.getElementById("forbidToggle");
+        const dirs = [[1,0],[0,1],[1,1],[1,-1]];
+        let board = [];
+        let current = BLACK;
+        let over = false;
+        let winCells = new Set();
+        let history = [];
+        let mode = "pvp";
+        let forbidOn = true;
+
+        const inRange = (x, y) => x >= 0 && x < SIZE && y >= 0 && y < SIZE;
+        const opponent = (p) => (p === BLACK ? WHITE : BLACK);
+        const cloneBoard = () => board.map((row) => row.slice());
+        const boardIsFull = () => board.every((row) => row.every((v) => v !== EMPTY));
+
+        const init = () => {
+          board = Array.from({ length: SIZE }, () => Array(SIZE).fill(EMPTY));
+          current = BLACK;
+          over = false;
+          winCells = new Set();
+          history = [];
+          mode = modeEl.value;
+          forbidOn = forbidToggleEl.checked;
+          render();
+          maybeAiMove();
+        };
+
+        const checkWin = (x, y, p) => {
+          for (const [dx, dy] of dirs) {
+            const line = [[x, y]];
+            let i = 1;
+            while (inRange(x + dx * i, y + dy * i) && board[y + dy * i][x + dx * i] === p) {
+              line.push([x + dx * i, y + dy * i]); i += 1;
+            }
+            i = 1;
+            while (inRange(x - dx * i, y - dy * i) && board[y - dy * i][x - dx * i] === p) {
+              line.unshift([x - dx * i, y - dy * i]); i += 1;
+            }
+            if (line.length >= 5) return line;
+          }
+          return null;
+        };
+
+        const lineInfo = (x, y, p, dx, dy) => {
+          let count = 1;
+          let openEnds = 0;
+          let nx = x + dx, ny = y + dy;
+          while (inRange(nx, ny) && board[ny][nx] === p) { count += 1; nx += dx; ny += dy; }
+          if (inRange(nx, ny) && board[ny][nx] === EMPTY) openEnds += 1;
+          nx = x - dx; ny = y - dy;
+          while (inRange(nx, ny) && board[ny][nx] === p) { count += 1; nx -= dx; ny -= dy; }
+          if (inRange(nx, ny) && board[ny][nx] === EMPTY) openEnds += 1;
+          return { count, openEnds };
+        };
+
+        const forbiddenReason = (x, y, p) => {
+          if (!forbidOn || p !== BLACK) return null;
+          board[y][x] = p;
+          let overline = false;
+          let openThree = 0;
+          let fourLike = 0;
+          dirs.forEach(([dx, dy]) => {
+            const info = lineInfo(x, y, p, dx, dy);
+            if (info.count > 5) overline = true;
+            if (info.count === 3 && info.openEnds === 2) openThree += 1;
+            if (info.count === 4 && info.openEnds >= 1) fourLike += 1;
+          });
+          board[y][x] = EMPTY;
+          if (overline) return "黑棋禁手：長連（超過五子）";
+          if (openThree >= 2) return "黑棋禁手：雙三";
+          if (fourLike >= 2) return "黑棋禁手：雙四";
+          return null;
+        };
+
+        const aiCandidates = () => {
+          const cands = new Set();
+          let hasStone = false;
+          for (let y = 0; y < SIZE; y += 1) {
+            for (let x = 0; x < SIZE; x += 1) {
+              if (board[y][x] === EMPTY) continue;
+              hasStone = true;
+              for (let dy = -2; dy <= 2; dy += 1) {
+                for (let dx = -2; dx <= 2; dx += 1) {
+                  const nx = x + dx, ny = y + dy;
+                  if (inRange(nx, ny) && board[ny][nx] === EMPTY) cands.add(`${nx},${ny}`);
+                }
+              }
+            }
+          }
+          if (!hasStone) return [{ x: 7, y: 7 }];
+          return Array.from(cands).map((s) => {
+            const [x, y] = s.split(",").map(Number);
+            return { x, y };
+          });
+        };
+
+        const scoreMove = (x, y, p) => {
+          let score = 0;
+          dirs.forEach(([dx, dy]) => {
+            const info = lineInfo(x, y, p, dx, dy);
+            if (info.count >= 5) score += 100000;
+            else if (info.count === 4 && info.openEnds === 2) score += 15000;
+            else if (info.count === 4 && info.openEnds === 1) score += 6000;
+            else if (info.count === 3 && info.openEnds === 2) score += 2200;
+            else if (info.count === 3 && info.openEnds === 1) score += 650;
+            else if (info.count === 2 && info.openEnds === 2) score += 220;
+          });
+          // favor center
+          score += 30 - (Math.abs(x - 7) + Math.abs(y - 7));
+          return score;
+        };
+
+        const aiPick = () => {
+          const cands = aiCandidates();
+          let best = null;
+          let bestScore = -Infinity;
+          cands.forEach(({ x, y }) => {
+            board[y][x] = WHITE;
+            const attack = scoreMove(x, y, WHITE);
+            board[y][x] = EMPTY;
+            board[y][x] = BLACK;
+            const defend = scoreMove(x, y, BLACK);
+            board[y][x] = EMPTY;
+            const total = attack + defend * 0.9 + Math.random() * 3;
+            if (total > bestScore) { bestScore = total; best = { x, y }; }
+          });
+          return best;
+        };
+
+        const maybeAiMove = () => {
+          if (over || mode !== "ai" || current !== WHITE) return;
+          statusEl.innerHTML = "輪到：<strong>白子（AI）思考中…</strong>";
+          window.setTimeout(() => {
+            if (over || current !== WHITE) return;
+            const mv = aiPick();
+            if (mv) onMove(mv.x, mv.y, true);
+          }, 220);
+        };
+
+        const onMove = (x, y, byAi = false) => {
+          if (over || board[y][x] !== EMPTY) return;
+          if (mode === "ai" && current === WHITE && !byAi) return;
+          const reason = forbiddenReason(x, y, current);
+          if (reason) {
+            statusEl.innerHTML = `<strong>${reason}</strong>`;
+            return;
+          }
+          history.push({
+            board: cloneBoard(),
+            current,
+            over,
+            winCells: Array.from(winCells),
+          });
+          board[y][x] = current;
+          const line = checkWin(x, y, current);
+          if (line) {
+            over = true;
+            winCells = new Set(line.map(([cx, cy]) => `${cx},${cy}`));
+            statusEl.innerHTML = `遊戲結束：<strong>${current === BLACK ? "黑子" : "白子"}獲勝</strong>`;
+          } else if (boardIsFull()) {
+            over = true;
+            statusEl.innerHTML = "遊戲結束：<strong>平手</strong>";
+          } else {
+            current = opponent(current);
+            statusEl.innerHTML = `輪到：<strong>${current === BLACK ? "黑子" : "白子"}</strong>`;
+          }
+          render();
+          maybeAiMove();
+        };
+
+        const undo = () => {
+          if (history.length === 0) return;
+          const steps = mode === "ai" ? Math.min(2, history.length) : 1;
+          for (let i = 0; i < steps; i += 1) {
+            const s = history.pop();
+            if (!s) break;
+            board = s.board.map((row) => row.slice());
+            current = s.current;
+            over = s.over;
+            winCells = new Set(s.winCells);
+          }
+          render();
+        };
+
+        const render = () => {
+          boardEl.innerHTML = "";
+          for (let y = 0; y < SIZE; y += 1) {
+            for (let x = 0; x < SIZE; x += 1) {
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "gomoku-cell";
+              btn.setAttribute("aria-label", `第 ${y + 1} 列第 ${x + 1} 行`);
+              if (winCells.has(`${x},${y}`)) btn.classList.add("win");
+              btn.addEventListener("click", () => onMove(x, y));
+              const v = board[y][x];
+              if (v) {
+                const disc = document.createElement("span");
+                disc.className = `gomoku-disc ${v}`;
+                btn.appendChild(disc);
+              }
+              boardEl.appendChild(btn);
+            }
+          }
+          if (!over && !(mode === "ai" && current === WHITE)) {
+            statusEl.innerHTML = `輪到：<strong>${current === BLACK ? "黑子" : "白子"}</strong>`;
+          }
+        };
+
+        modeEl.addEventListener("change", init);
+        forbidToggleEl.addEventListener("change", () => {
+          forbidOn = forbidToggleEl.checked;
+          render();
+        });
+        undoBtn.addEventListener("click", undo);
+        restartBtn.addEventListener("click", init);
+        init();
+      })();
+    </script>
+  </body>
+</html>

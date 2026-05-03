@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="西洋棋遊戲（Chess）" />
+    <title>西洋棋｜棋類遊戲</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <style>
+      .chess-wrap { max-width: 980px; margin: 0 auto; }
+      .chess-layout { display: grid; grid-template-columns: 1fr 300px; gap: 14px; }
+      .chess-board-container {
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 10px;
+        background: var(--panel);
+        margin: 0 auto;
+      }
+      .chess-board {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(8, 1fr);
+        border: 2px solid #5a3921;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .chess-cell {
+        aspect-ratio: 1 / 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+      }
+      .chess-cell.light { background-color: #f0d9b5; color: #000; }
+      .chess-cell.dark { background-color: #b58863; color: #000; }
+      .chess-cell.selected::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(20, 85, 30, 0.5);
+      }
+      .chess-cell.hint::after {
+        content: "";
+        position: absolute;
+        width: 25%;
+        height: 25%;
+        border-radius: 50%;
+        background: rgba(20, 85, 30, 0.4);
+      }
+      .chess-cell.hint.capture::after {
+        width: 80%;
+        height: 80%;
+        background: transparent;
+        border: 4px solid rgba(20, 85, 30, 0.4);
+      }
+      .chess-cell.last-move::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(155, 199, 0, 0.41);
+      }
+      .chess-cell.in-check {
+        box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.8);
+      }
+      /* White pieces */
+      .chess-cell .p-w, .chess-cell .n-w, .chess-cell .b-w, .chess-cell .r-w, .chess-cell .q-w, .chess-cell .k-w {
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 2px rgba(0,0,0,0.3);
+      }
+      /* Black pieces */
+      .chess-cell .p-b, .chess-cell .n-b, .chess-cell .b-b, .chess-cell .r-b, .chess-cell .q-b, .chess-cell .k-b {
+        position: relative;
+        z-index: 1;
+      }
+
+      .chess-panel { border: 1px solid var(--border); border-radius: 16px; background: var(--panel); padding: 12px; }
+      .chess-status { margin: 0 0 10px; color: var(--muted); min-height: 24px; font-weight: 500; }
+      .chess-controls { display: grid; gap: 8px; margin-bottom: 12px; }
+      .chess-field { display: grid; gap: 4px; color: var(--muted); font-size: 12px; }
+      .chess-select {
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: #000;
+      }
+      .pgn-box {
+        margin-top: 10px;
+        font-family: monospace;
+        font-size: 12px;
+        height: 100px;
+        overflow-y: auto;
+        padding: 8px;
+        background: rgba(0,0,0,0.1);
+        border-radius: 8px;
+        word-break: break-all;
+      }
+      html[data-theme="dark"] .pgn-box {
+        background: rgba(255,255,255,0.05);
+      }
+      @media (max-width: 900px) { .chess-layout { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <canvas class="fx-canvas" aria-hidden="true"></canvas>
+    <div class="cursor-glow" aria-hidden="true"></div>
+    <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-bar"></div></div>
+    <a class="skip-link" href="#content">跳到主要內容</a>
+    <header class="site-header" id="top">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="回到首頁">
+          <span class="brand-mark" aria-hidden="true">◆</span>
+          <span class="brand-text">林彥廷</span>
+        </a>
+        <nav class="nav" aria-label="主要導覽">
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+            <span class="nav-toggle-icon" aria-hidden="true"></span>
+            <span class="sr-only">開啟/關閉選單</span>
+          </button>
+          <div class="nav-menu" id="nav-menu">
+            <a class="nav-link" href="index.html#projects">作品</a>
+            <a class="nav-link" href="board-games.html">棋類遊戲</a>
+            <a class="nav-link" href="games.html">遊戲集</a>
+          </div>
+        </nav>
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" aria-label="切換深色模式">
+            <span class="theme-toggle-icon" aria-hidden="true"></span>
+          </button>
+          <a class="btn btn-primary" href="index.html#contact">合作邀約</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="content">
+      <section class="hero section">
+        <div class="container">
+          <div class="hero-copy reveal">
+            <h1 class="hero-title">西洋棋（Chess）</h1>
+            <p class="hero-subtitle">由強大的開源邏輯引擎推動，支援雙人對局與 AI 對抗，包含入堡與升變等完整規則。</p>
+          </div>
+        </div>
+      </section>
+      
+      <section class="section">
+        <div class="container chess-wrap">
+          <div class="chess-layout">
+            <section class="panel reveal">
+              <p class="chess-status" id="status" aria-live="polite"></p>
+              <div class="chess-board-container">
+                <div class="chess-board" id="board"></div>
+              </div>
+            </section>
+            
+            <aside class="chess-panel reveal">
+              <div class="chess-controls">
+                <label class="chess-field">
+                  <span>模式</span>
+                  <select id="mode" class="chess-select">
+                    <option value="pvp">雙人遊玩</option>
+                    <option value="ai">對戰 AI（你執白方）</option>
+                  </select>
+                </label>
+              </div>
+              <h3 class="panel-title">操作提示</h3>
+              <ul class="list" style="color: var(--muted); font-size: 14px;">
+                <li>點擊己方棋子顯示可合法移動的步數。</li>
+                <li>兵達底線時自動升變為「后」。</li>
+                <li>若欲入堡 (Castling)，請點擊王再點擊目標入堡格。</li>
+              </ul>
+              
+              <h3 class="panel-title" style="margin-top: 16px;">棋局紀錄 (PGN)</h3>
+              <div class="pgn-box" id="pgn"></div>
+
+              <div style="margin-top: 16px; display: grid; gap: 8px;">
+                <button class="btn btn-primary" id="restartBtn" type="button">重新開始</button>
+                <button class="btn btn-ghost" id="undoBtn" type="button">悔棋</button>
+                <a class="btn btn-ghost" href="board-games.html">回棋類遊戲</a>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p class="muted">© <span data-year></span> 林彥廷. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Chess Game Application Logic -->
+    <script src="chess-game.js"></script>
+  </body>
+</html>

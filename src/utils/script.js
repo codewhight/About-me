@@ -1,4 +1,4 @@
-(() => {
+export const initGlobalScripts = () => {
   const root = document.documentElement;
   const themeToggle = document.querySelector(".theme-toggle");
   const navToggle = document.querySelector(".nav-toggle");
@@ -116,13 +116,22 @@
     if (links.length === 0) return;
 
     const sections = links
-      .map((a) => document.querySelector(a.getAttribute("href")))
+      .map((a) => {
+        const href = a.getAttribute("href") || "";
+        const hashIdx = href.indexOf("#");
+        if (hashIdx === -1) return null;
+        try {
+          return document.querySelector(href.slice(hashIdx));
+        } catch {
+          return null;
+        }
+      })
       .filter(Boolean);
 
     const setActive = (id) => {
       links.forEach((a) => {
-        const href = a.getAttribute("href");
-        a.classList.toggle("is-active", href === `#${id}`);
+        const href = a.getAttribute("href") || "";
+        a.classList.toggle("is-active", href.endsWith(`#${id}`));
       });
     };
 
@@ -384,10 +393,17 @@
         demo: "games.html",
         github: null,
       },
+      boardgames: {
+        title: "棋類遊戲（黑白棋 / 五子棋）",
+        desc: "新增棋類遊戲分類頁，包含黑白棋與五子棋，兩者皆支援雙人與 AI 模式。黑白棋提供合法步提示開關、翻子與自動 pass；五子棋提供悔棋與黑棋禁手（長連/雙三/雙四）規則。",
+        tags: ["JavaScript", "棋類遊戲", "規則引擎", "AI 對戰", "前端互動"],
+        demo: "board-games.html",
+        github: null,
+      },
       unity: {
-        title: "Unity 2D 冒險遊戲",
-        desc: "使用 Unity 製作的 2D 冒險遊戲（場景、角色、敵人與道具設計）。",
-        tags: ["Unity", "2D", "C#", "遊戲設計"],
+        title: "Unity 橫向 2D 彈幕遊戲",
+        desc: "使用 Unity 製作的橫向 2D 彈幕遊戲，包含玩家走位、彈道生成、碰撞判定與關卡節奏設計，強調可讀性與操作反饋。",
+        tags: ["Unity", "2D", "C#", "彈幕", "遊戲設計"],
         demo: "unity-game/index.html",
         github: null,
       },
@@ -497,7 +513,7 @@
 
     const coarse =
       window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
-    const starCount = coarse ? 80 : 150;
+    const starCount = coarse ? 150 : 300;
 
     let w = 0;
     let h = 0;
@@ -520,7 +536,7 @@
     const stars = Array.from({ length: starCount }, () => ({
       x: rand(0, w || window.innerWidth),
       y: rand(0, h || window.innerHeight),
-      r: rand(0.5, 2.5),
+      r: rand(1.0, 3.5),
       brightness: rand(0.3, 1),
       twinkle: rand(0, Math.PI * 2),
       twinkleSpeed: rand(0.01, 0.05),
@@ -592,13 +608,13 @@
         ctx.fill();
 
         // Add glow for brighter stars
-        if (star.brightness > 0.7) {
-          const gradient = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.r * 3);
-          gradient.addColorStop(0, `rgba(124, 92, 255, ${star.brightness * 0.2 * twinkleFactor})`);
+        if (star.brightness > 0.5) {
+          const gradient = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.r * 5);
+          gradient.addColorStop(0, `rgba(124, 92, 255, ${star.brightness * 0.5 * twinkleFactor})`);
           gradient.addColorStop(1, 'rgba(124, 92, 255, 0)');
           ctx.fillStyle = gradient;
           ctx.beginPath();
-          ctx.arc(star.x, star.y, star.r * 3, 0, Math.PI * 2);
+          ctx.arc(star.x, star.y, star.r * 5, 0, Math.PI * 2);
           ctx.fill();
         }
       });
@@ -614,7 +630,7 @@
         stars.push({
           x: rand(0, w),
           y: rand(0, h),
-          r: rand(0.5, 2.5),
+          r: rand(1.0, 3.5),
           brightness: rand(0.3, 1),
           twinkle: rand(0, Math.PI * 2),
           twinkleSpeed: rand(0.01, 0.05),
@@ -626,7 +642,7 @@
     step();
   };
 
-  initTheme();
+  // initTheme();
   initNav();
   initScrollSpy();
   initScrollProgress();
@@ -639,5 +655,4 @@
   initBackToTop();
   initYear();
 
-  if (themeToggle) themeToggle.addEventListener("click", cycleTheme);
-})();
+};
