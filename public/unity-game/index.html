@@ -1,169 +1,989 @@
 <!doctype html>
-<html lang="zh-Hant" data-theme="auto">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <meta
-      name="description"
-      content="Unity 橫向 2D 彈幕遊戲 — 獨立作品介紹（與 Python 小遊戲集分開）"
-    />
-    <title>Unity 橫向 2D 彈幕遊戲｜獨立作品</title>
+<html lang="zh-Hant" data-theme="dark">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="Gole：破滅與新生 — 遊戲全圖鑑索引（玩家、遺物、Boss、道具、場景）" />
+  <title>遊戲全圖鑑｜Gole：破滅與新生</title>
 
-    <link rel="stylesheet" href="../styles.css" />
-    <script defer src="../script.js"></script>
-  </head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+    rel="stylesheet" />
 
-  <body>
-    <canvas class="fx-canvas" aria-hidden="true"></canvas>
-    <div class="cursor-glow" aria-hidden="true"></div>
-    <div class="scroll-progress" aria-hidden="true">
-      <div class="scroll-progress-bar"></div>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    :root {
+      --accent: #ff4d4d;
+      --accent-glow: rgba(255, 77, 77, 0.3);
+      --bg-panel: rgba(20, 20, 25, 0.8);
+      --stage1: #ff6b6b;
+      --stage2: #51cf66;
+      --stage3: #339af0;
+      --prop-cat: #fcc419;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background-color: #0a0a0c;
+      color: #e0e0e0;
+    }
+
+    .gallery-header {
+      padding: 6rem 0 3rem;
+      text-align: center;
+      background: linear-gradient(to bottom, #1a1a20, #0a0a0c);
+    }
+
+    .gallery-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, #fff, #ff4d4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 3rem;
+      position: sticky;
+      top: 80px;
+      z-index: 100;
+      padding: 1rem;
+      background: rgba(10, 10, 12, 0.9);
+      backdrop-filter: blur(10px);
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 0.6rem 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: #888;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .gallery-section {
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .gallery-section.active {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section-group-title {
+      grid-column: 1 / -1;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 3rem 0 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .card {
+      background: var(--bg-panel);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-img-wrapper {
+      width: 100%;
+      aspect-ratio: 1/1;
+      overflow: hidden;
+      background: #15151a;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #relics .card-img-wrapper,
+    #props .card-img-wrapper {
+      background: transparent;
+    }
+
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform 0.6s ease;
+    }
+
+    .card:hover .card-img {
+      transform: scale(1.1);
+    }
+
+    .card-content {
+      padding: 1.5rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: #fff;
+      text-align: center;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #aaa;
+      margin-bottom: 1rem;
+    }
+
+    .card-stats {
+      margin-top: auto;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    .card-skills {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .skill-item {
+      text-align: left;
+    }
+
+    .skill-name {
+      display: block;
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .skill-desc {
+      display: block;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: #888;
+    }
+
+    .card-stats span strong {
+      color: #ccc;
+    }
+
+    /* Large Scene Cards */
+    #scenes .card {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      min-height: 300px;
+    }
+
+    #scenes .card-img-wrapper {
+      width: 50%;
+      aspect-ratio: auto;
+    }
+
+    #scenes .card-img {
+      object-fit: cover;
+    }
+
+    .gallery-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
+    }
+
+    .stage-badge {
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .badge-s1 {
+      background: var(--stage1);
+    }
+
+    .badge-s2 {
+      background: var(--stage2);
+    }
+
+    .badge-s3 {
+      background: var(--stage3);
+    }
+
+    @media (max-width: 992px) {
+      #scenes .card {
+        flex-direction: column;
+      }
+
+      #scenes .card-img-wrapper {
+        width: 100%;
+        height: 250px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .gallery-section.active {
+        grid-template-columns: 1fr;
+      }
+
+      .gallery-title {
+        font-size: 2.2rem;
+      }
+
+      .tabs {
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding: 1rem;
+      }
+
+      .tab-btn {
+        white-space: nowrap;
+        padding: 0.5rem 1.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">◆</span>
+        <span class="brand-text">林彥廷</span>
+      </a>
+      <nav class="nav">
+        <div class="nav-menu">
+          <a class="nav-link" href="../index.html#projects">回到作品集</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content">
+    <section class="gallery-header">
+      <div class="container">
+        <p class="badge" style="display: inline-block; margin-bottom: 1rem;">
+          <span class="dot"></span>
+          Gole: 破滅與新生
+        </p>
+        <h1 class="gallery-title">遊戲完整圖鑑</h1>
+        <p class="muted" style="max-width: 700px; margin: 0 auto;">
+          深度收錄《Gole：破滅與新生》世界觀下的全量資產，包括 6 位繼承者、25 件古老遺物、18 位強力首領、戰術道具與多樣關卡場景。
+        </p>
+      </div>
+    </section>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showSection('players')">🦸 英雄角色</button>
+      <button class="tab-btn" onclick="showSection('relics')">🏺 古老遺物</button>
+      <button class="tab-btn" onclick="showSection('bosses')">👹 首領 Boss</button>
+      <button class="tab-btn" onclick="showSection('props')">📦 場景道具</button>
+      <button class="tab-btn" onclick="showSection('scenes')">🗺️ 遊戲場景</button>
     </div>
 
-    <a class="skip-link" href="#content">跳到主要內容</a>
-
-    <header class="site-header" id="top">
-      <div class="container header-inner">
-        <a class="brand" href="../index.html" aria-label="回到首頁">
-          <span class="brand-mark" aria-hidden="true">◆</span>
-          <span class="brand-text">林彥廷</span>
-        </a>
-
-        <nav class="nav" aria-label="主要導覽">
-          <button
-            class="nav-toggle"
-            type="button"
-            aria-expanded="false"
-            aria-controls="nav-menu"
-          >
-            <span class="nav-toggle-icon" aria-hidden="true"></span>
-            <span class="sr-only">開啟/關閉選單</span>
-          </button>
-          <div class="nav-menu" id="nav-menu">
-            <a class="nav-link" href="../about.html">關於我</a>
-            <a class="nav-link" href="../index.html#skills">技能</a>
-            <a class="nav-link" href="../index.html#projects">作品</a>
-            <a class="nav-link" href="../index.html#timeline">經歷</a>
-            <a class="nav-link" href="../index.html#contact">聯絡</a>
-            <a class="nav-link" href="../games.html" title="另一件作品：瀏覽器內 Python 小遊戲"
-              >Python 小遊戲集</a
-            >
+    <div class="gallery-container">
+      <!-- Players Section -->
+      <div id="players" class="gallery-section active">
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image31.png" alt="Magmus" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Flame Tech</span>
+            <h3 class="card-title">麥格瑪斯 (Magmus)</h3>
+            <p class="card-desc">曾是克羅姆村平凡的小恐龍。在科技城廢墟中意外鑽入「原型反應裝甲」，喚醒了血脈中的火焰力量，能凝聚龍炎火球。</p>
+            <div class="card-skills">
+              <div class="skill-item">
+                <span class="skill-name">普通攻擊：龍炎超載彈 (Draco-Overdrive)</span>
+                <span class="skill-desc">麥格瑪斯體內的「科技先祖」血脈與反應裝甲產生共鳴。當他張開口，裝甲的冷卻管道會瞬間轉為高熱的亮橘色，將體內的火焰能量壓縮、加速，並透過裝甲的集束口吐出一顆高密度的「龍炎火球」。這不僅僅是魔法的火焰，更是融合了微型核聚變技術的科技爆裂彈，能輕易融穿敵人的防線。</span>
+              </div>
+              <div class="skill-item">
+                <span class="skill-name">大招：【新星・七彩烈焰風暴】(Nova: Prism Inferno)</span>
+                <span class="skill-desc">麥格瑪斯將裝甲的反應爐超載運運轉，徹底解放「科技先祖」的潛能。裝甲上的符文瞬間亮起，將原本純粹的龍炎透過科技稜鏡進行極致的分光與增幅。伴隨著裝甲釋放的蒸汽與轟鳴，麥格瑪斯向四周瞬間呈圓弧狀爆發射出 12 顆流光溢彩的「七彩火球」。</span>
+              </div>
+            </div>
           </div>
-        </nav>
+        </article>
 
-        <div class="header-actions">
-          <button class="theme-toggle" type="button" aria-label="切換深色模式">
-            <span class="theme-toggle-icon" aria-hidden="true"></span>
-          </button>
-          <a class="btn btn-primary" href="../index.html#contact">合作邀約</a>
-        </div>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image53.png" alt="Flameheart" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Holy Blade</span>
+            <h3 class="card-title">炎誓 (Flameheart)</h3>
+            <p class="card-desc">引向艾薩迦堡遺跡，拔出了深埋巨石中的璀璨寶劍。獲得符文鎧甲，成為「聖劍勇者」繼承人，劍身燃起熊熊烈焰。</p>
+            <div class="card-skills">
+              <div class="skill-item">
+                <span class="skill-name">普通攻擊：蒼藍斬 (Blue Flame)</span>
+                <span class="skill-desc">炎誓揮舞手中覺醒的聖劍，將體內初醒的奇幻先祖之力注入鋒刃。隨著劍身劃破空氣，會揮出一道參雜著熊熊烈焰的深藍色軌跡斬擊。</span>
+              </div>
+              <div class="skill-item">
+                <span class="skill-name">大招：【聖光・半月破空擊】(Sacred Arc: Moon-Cutter)</span>
+                <span class="skill-desc">炎誓將聖劍高舉過頭，全身的「符文鎧甲」感應到主人的決心，爆發出耀眼奪目的金色光芒。他將所有的先祖之力灌注於劍尖，使劍身上的烈焰由藍轉金，凝聚成純度極高的黃金聖炎，釋放出一道巨大的半月型黃色斬擊，向遠距離破空飛行。</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image27.png" alt="Gloomwalker" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Soul Lantern</span>
+            <h3 class="card-title">幽行者 (Gloomwalker)</h3>
+            <p class="card-desc">在幽魂森林深處祭壇發現了「幽綠提燈」。喚醒靈魂共鳴，手持幽魂匕首，成為在黑暗中執行正義的靈魂行者。</p>
+            <div class="card-skills">
+              <div class="skill-item">
+                <span class="skill-name">普通攻擊：魂織影刃 (Soul-Woven Dagger)</span>
+                <span class="skill-desc">幽行者輕輕搖晃手中的「幽綠提燈」，抽取一絲提燈中永不熄滅的冥火，在指尖瞬間凝聚成一柄散發著微弱綠光的「幽魂匕首」。隨後，他以極其敏捷的身手投擲匕首。這柄匕首在空中劃過一道幽綠的軌跡，能夠穿透敵人的肉體，直接對其靈魂造成冰冷刺骨的割裂傷害。</span>
+              </div>
+              <div class="skill-item">
+                <span class="skill-name">大招：【魂刃循環・冥火守護】(Phantasmal Ring: Soul Blades)</span>
+                <span class="skill-desc">幽行者將幽綠提燈高高舉起，徹底解開提燈的限制，釋放出禁忌的幽暗先祖之力。剎那間，淒冷的幽冥之風呼嘯而過，提燈爆發出刺眼的綠色幽光。在這股龐大靈魂能量的牽引下，三把燃燒著幽綠冥火的巨型「魂刃」破空降世，宛如忠誠的護法般緊密圍繞、盤旋在幽行者的身旁快速旋轉。斬碎一切試圖接近幽行者的敵人。</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image44.png" alt="Ray-Focus" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Ion Strike</span>
+            <h3 class="card-title">聚雷 (Ray-Focus)</h3>
+            <p class="card-desc">拾荒時發現「N-Link 戰術指揮服」。喚醒操控離子光線的天賦，指揮數十台蜂群浮游炮進行高科技打擊。</p>
+            <div class="card-skills">
+              <div class="skill-item">
+                <span class="skill-name">普通攻擊：離子脈衝射擊 (Ionic Pulse Shot)</span>
+                <span class="skill-desc">聚雷透過「N-Link 戰術指揮服」鎖定目標，裝甲的神經連結系統瞬間將他體內的古老雷電天賦轉化為高密度的光子能量。隨著指裝甲砲口的微型反應爐亮起，他向前方高速發射出數道高能雷射。這高熱的離子雷射能輕易穿透敵人的護甲，並在擊中目標時釋放出微弱的電磁干擾。</span>
+              </div>
+              <div class="skill-item">
+                <span class="skill-name">大招：【終焉・星流雷射砲】(Nova Beam: Swarm Overload)</span>
+                <span class="skill-desc">聚雷開啟裝甲的終極戰術超載模式，在身旁召喚出三台高能「蜂群浮游炮」，轉化為朝向正前方的雷射砲口。三台浮游炮持續打出筆直朝前的耀眼雷射光。與此同時，這三台雷射砲口會在聚雷周圍快速旋轉，帶動著三道毀滅性的離子雷射光束形成一個密不透風的旋轉光幕。</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image11.png" alt="Umbra" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Shadow Blade</span>
+            <h3 class="card-title">幽影 (Umbra)</h3>
+            <p class="card-desc">誤闖禁地觸碰闇影石，獲得「蝕魂者」詛咒之刃。身體被黑霧纏繞，與陰影融為一體，掌握純粹的暗影力量。</p>
+            <div class="card-skills">
+              <div class="skill-item">
+                <span class="skill-name">普通攻擊：裂地影牙 (Grave Shadow Slash)</span>
+                <span class="skill-desc">幽影揮將體內奔騰的暗影力量與幽綠靈火注入大地。前方地面會瞬間崩裂，發動從地而起、如猛獸獠牙般銳利的暗影斬擊。這股自下而上竄出的黑霧與刀光，能輕易撕裂敵人的防線。</span>
+              </div>
+              <div class="skill-item">
+                <span class="skill-name">大招：【影刃降世・三界寂滅】(Decimating Eclipse: Triple Shadow Blades)</span>
+                <span class="skill-desc">幽影徹底解放體內的先祖之力，赤紅的雙眼爆發出令人膽寒的光芒，翻騰的黑霧如風暴般在身體周圍瘋狂肆虐。伴隨著詛咒之刃的共鳴，虛空撕裂，他從背後召喚出三把遮天蔽日的「影之巨刃」，帶著無可匹敵的毀滅威壓砸落並橫掃戰場。</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image13.png" alt="Aelion" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Wind Archer</span>
+            <h3 class="card-title">艾里昂 (Aelion)</h3>
+            <p class="card-desc">在城堡地下密室發現翠綠藤蔓纏繞的古老長弓。繼承「疾風射手」意志，能射出閃爍魔力光芒的能量箭矢。</p>
+            <div class="card-skills">
+              <div class="skill-item">
+                <span class="skill-name">普通攻擊：風痕魔矢 (Wind-Scarred Bolt)</span>
+                <span class="skill-desc">艾里昂輕撫古弓，拉開弓弦。在「逐風者鎧甲」的疾風魔力加持下，空氣中的風元素與藍色粒子迅速在指尖匯聚，瞬間凝聚出純粹的銀白色箭矢並破空射出。</span>
+              </div>
+              <div class="skill-item">
+                <span class="skill-name">大招：【極寒降臨・冰龍嘯天破】(Absolute Zero: Frost Dragon's Wrath)</span>
+                <span class="skill-desc">艾里昂將體內的奇幻先祖之力與極寒風暴壓縮至極限。全力拉滿古弓，無數冰晶在弓弦上瘋狂肆虐，凝聚成一支散發著絕對零度寒光的箭矢。飛出瞬間化作冰龍形狀箭矢，咆哮著衝向前方戰場。</span>
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
-    </header>
 
-    <main id="content">
-      <section class="hero section">
-        <div class="container">
-          <div class="hero-copy reveal">
-            <p class="badge">
-              <span class="dot" aria-hidden="true"></span>
-              獨立作品 · Unity
-            </p>
-            <h1 class="hero-title">Unity 橫向 2D 彈幕遊戲</h1>
-            <p class="hero-subtitle">
-              使用 <strong>Unity</strong> 開發的橫向 2D 彈幕遊戲，重點在角色移動、彈道設計、
-              閃避節奏與關卡壓力曲線。本頁為專屬介紹，與 Python 小遊戲集為不同專案。
-            </p>
-            <div class="hero-cta">
-              <a class="btn btn-primary" href="#details">查看詳情</a>
-              <a class="btn btn-ghost" href="../index.html#projects">回到作品集</a>
-            </div>
+      <!-- Relics Section -->
+      <div id="relics" class="gallery-section">
+        <h2 class="section-group-title">🛡️ 基礎強化 (純正面)</h2>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image32.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">奔雷的羽翼</h3>
+            <p class="card-desc">移動速度 +15%。</p>
           </div>
-        </div>
-      </section>
-
-      <section class="section" id="details">
-        <div class="container">
-          <div class="panel reveal" style="margin-bottom: 1.25rem">
-            <h3 class="panel-title">📌 專案說明</h3>
-            <p class="muted" style="line-height: 1.8; margin: 0">
-              此 Unity 作品已從「Python 小遊戲集」中<strong>獨立</strong>出來，主題為橫向 2D 彈幕玩法，便於在履歷／作品集單獨展示遊戲迴圈設計、
-              子彈生成與碰撞判定。若之後有 WebGL 建置檔，可在此頁嵌入遊玩或提供下載連結。
-            </p>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image24.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">星隕的結晶</h3>
+            <p class="card-desc">射擊頻率 +25%。</p>
           </div>
-
-          <div style="display: flex; flex-direction: column; gap: 2rem">
-            <div class="panel reveal">
-              <h3 class="panel-title">🎯 核心玩法</h3>
-              <p class="muted" style="line-height: 1.8">
-                玩家在橫向場景中移動並持續閃避彈幕，同時抓準時機輸出。遊戲節奏強調「走位、預判、資源分配」三者平衡，讓每一波敵彈都有可讀性與壓迫感。
-              </p>
-            </div>
-
-            <div class="about-grid">
-              <div class="panel reveal">
-                <h3 class="panel-title">🗺️ 關卡設計</h3>
-                <ul class="list">
-                  <li><strong>訓練關：</strong>引導玩家熟悉移動、閃避與射擊節奏。</li>
-                  <li><strong>挑戰關：</strong>加入複合彈道與敵人組合，提升操作密度。</li>
-                  <li><strong>Boss 關：</strong>多階段彈幕模式，考驗讀圖與臨場反應。</li>
-                </ul>
-              </div>
-
-              <div class="panel reveal">
-                <h3 class="panel-title">⚙️ 系統機制</h3>
-                <ul class="list">
-                  <li><strong>玩家控制：</strong>橫向位移、射擊、無敵幀閃避。</li>
-                  <li><strong>彈幕管理：</strong>不同發射頻率、角度與速度組合。</li>
-                  <li><strong>判定與反饋：</strong>碰撞檢測、受擊提示、分數統計。</li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="about-grid">
-              <div class="panel reveal">
-                <h3 class="panel-title">👾 敵人與彈道</h3>
-                <ul class="list">
-                  <li><strong>直線彈：</strong>高頻率基礎壓制，迫使玩家持續走位。</li>
-                  <li><strong>散射彈：</strong>扇形覆蓋，限制安全區域。</li>
-                  <li><strong>追蹤彈：</strong>短時間追尾，考驗節奏切換與路徑規劃。</li>
-                </ul>
-              </div>
-
-              <div class="panel reveal">
-                <h3 class="panel-title">🎒 道具與成長</h3>
-                <ul class="list">
-                  <li><strong>補給包：</strong>恢復生命值，提高容錯率。</li>
-                  <li><strong>火力強化：</strong>短時間提升攻擊輸出。</li>
-                  <li><strong>護盾模組：</strong>吸收一次受擊，增加通關穩定度。</li>
-                </ul>
-              </div>
-            </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image42.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">噬血的咒印</h3>
+            <p class="card-desc">每擊殺 50 個敵人，自動恢復 10 點生命值。</p>
           </div>
-        </div>
-      </section>
-    </main>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image12.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">豐饒的種子</h3>
+            <p class="card-desc">獲得能量加成 +30%。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image29.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">虛無的重奏</h3>
+            <p class="card-desc">射擊時有 15% 機率觸發「殘影射擊」，額外向目標發射兩枚小型子彈。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image1.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">古老的遺骨</h3>
+            <p class="card-desc">增加玩家的生命上限。</p>
+          </div>
+        </article>
 
-    <footer class="site-footer">
-      <div class="container footer-inner">
-        <p class="footer-copyright">
-          © <span id="year"></span> 林彥廷. All rights reserved.
-        </p>
-        <a class="footer-back-top" href="#top" aria-label="回到頁首">
-          <span aria-hidden="true">↑</span>
-        </a>
+        <h2 class="section-group-title">🔥 高風險高回報 (負面效果)</h2>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image3.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">傷害/爆發</span>
+            <h3 class="card-title">崩毀的斷刃</h3>
+            <p class="card-desc">基礎攻擊力提升 100%，但受到任何傷害時，扣血量額外增加 35%。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image4.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">傷害/爆發</span>
+            <h3 class="card-title">過載的閥門</h3>
+            <p class="card-desc">射速提升 50%，但每發子彈會消耗玩家 0.5% 最大生命值。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image5.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">傷害/爆發</span>
+            <h3 class="card-title">凋零的殘片</h3>
+            <p class="card-desc">攻擊力提升 30%，附加「脆弱」狀態，但自身受到的傷害增加 20%。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image41.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">控制/干擾</span>
+            <h3 class="card-title">鏽蝕的齒輪</h3>
+            <p class="card-desc">擊中敵人會施加緩速，但自身移動速度降低 20%。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image7.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">控制/干擾</span>
+            <h3 class="card-title">禁忌的透鏡</h3>
+            <p class="card-desc">攻擊範圍擴大 50%，但角色移動速度降低 15%。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image45.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">控制/干擾</span>
+            <h3 class="card-title">混濁的藥劑</h3>
+            <p class="card-desc">傷害提升 30%，但彈道會隨機偏移 15 度。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image37.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">生存/犧牲</span>
+            <h3 class="card-title">血祭的器皿</h3>
+            <p class="card-desc">生命值上限增加 50%，但補血道具的恢復量降低 80%。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image6.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">生存/犧牲</span>
+            <h3 class="card-title">幽冥的斗篷</h3>
+            <p class="card-desc">受擊時有 30% 機率直接閃避，但無法觸發任何拾取護盾。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image28.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">生存/犧牲</span>
+            <h3 class="card-title">守墓的徽章</h3>
+            <p class="card-desc">生命低於 20% 時傷害翻倍，但視野縮小。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image25.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">資源/經濟</span>
+            <h3 class="card-title">貪食的口袋</h3>
+            <p class="card-desc">能量獲取速度加倍，但增益道具效果減半。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image43.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">資源/經濟</span>
+            <h3 class="card-title">負債的契約</h3>
+            <p class="card-desc">初始能量滿載，但殺敵的能量減少 50%。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image40.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">資源/經濟</span>
+            <h3 class="card-title">枯竭的枝芽</h3>
+            <p class="card-desc">自動回血能力上升，但不再掉落回血道具。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image36.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">位移/機制</span>
+            <h3 class="card-title">重力的枷鎖</h3>
+            <p class="card-desc">射擊頻率提升 30%，但每隔 5 秒會被迫進入「靜止冷卻」狀態 1 秒。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image10.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">位移/機制</span>
+            <h3 class="card-title">流沙的護脛</h3>
+            <p class="card-desc">站立不動時獲得 50% 減傷，但移動時攻擊力降低 50%。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image23.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">位移/機制</span>
+            <h3 class="card-title">極限的視界</h3>
+            <p class="card-desc">Boss 彈幕速度降低 20%，但其攻擊頻率（冷卻時間）大幅縮短。</p>
+          </div>
+        </article>
+
+        <h2 class="section-group-title">💎 特殊生存與代價</h2>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image2.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">生存/犧牲</span>
+            <h3 class="card-title">不朽的石棺</h3>
+            <p class="card-desc">致死傷害時立即恢復 20% 生命（每場一次），但移速永久降低 10%。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image14.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">生存/犧牲</span>
+            <h3 class="card-title">荊棘的纏繞</h3>
+            <p class="card-desc">碰撞傷害降低 40% 並反彈雙倍傷害，但受彈幕傷害增加 20%。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image20.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">生存/犧牲</span>
+            <h3 class="card-title">祈願的殘燭</h3>
+            <p class="card-desc">滿血時能量獲取翻倍，但受傷後 15 秒內無法獲得能量。</p>
+          </div>
+        </article>
+
+
       </div>
-    </footer>
 
-    <script>
-      document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
-  </body>
+      <!-- Bosses Section -->
+      <div id="bosses" class="gallery-section">
+        <h2 class="section-group-title"><span class="stage-badge badge-s1">Stage 1</span> 碎裂峽谷：空翼軍團</h2>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image46.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【劫火之影】· 熾焰</h3>
+            <p class="card-desc">雙翼融合煉獄岩漿，揮動間散發足以融化地表的業火。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 100</span><span><strong>Speed:</strong>
+                4</span><span><strong>Score:</strong> 30</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image57.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【極光裂嘯】· 雷霆</h3>
+            <p class="card-desc">羽毛由電漿凝結，化作閃電貫穿地表，產生震碎岩石的雷鳴。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 150</span><span><strong>Speed:</strong>
+                10</span><span><strong>Score:</strong> 45</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image56.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【不動金剛】· 磐石</h3>
+            <p class="card-desc">吸取稀有金屬凝結成「熔岩金鱗」，落地能引發板塊震動。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 200</span><span><strong>Speed:</strong>
+                2</span><span><strong>Score:</strong> 60</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image52.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【劫世之紅蓮】· 伊格尼斯</h3>
+            <p class="card-desc">太古災厄，靈魂與地核融合，雙翼遮蔽星辰，溢出高純度雷火。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 240</span><span><strong>Speed:</strong> 5</span></div>
+          </div>
+        </article>
+
+        <h2 class="section-group-title"><span class="stage-badge badge-s2">Stage 2</span> 幽魂森林：暗影近衛軍</h2>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image61.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【靈火幽羽】· 熾焰</h3>
+            <p class="card-desc">噴吐冥道靈火，呈現冷冽青色，揮動間伴隨靈魂低語。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 180</span><span><strong>Speed:</strong> 6</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image34.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【九極靈曜】· 餘燼幽狐</h3>
+            <p class="card-desc">九尾化作暗影與烈焰的交響樂章，穿梭於虛實邊界。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 160</span><span><strong>Speed:</strong> 6</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image51.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【冥雷之影】· 雷霆</h3>
+            <p class="card-desc">電光被暗影染指，轉化為詭譎的冥府綠雷，能穿透靈魂。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 240</span><span><strong>Speed:</strong> 12</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image21.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【焦木雷靈】· 索恩</h3>
+            <p class="card-desc">枯死巨木與閃電融合，根鬚汲取咒力，胸口跳動著「雷心」。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 250</span><span><strong>Speed:</strong> 5</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image38.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【冥岩刻印】· 磐石</h3>
+            <p class="card-desc">金羽翼融入暗影，昇華為扭曲空間的幽冥力場，揮擊帶有重壓。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 280</span><span><strong>Speed:</strong> 2.5</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image49.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【遺落之凶星】· 葬岩黑熊</h3>
+            <p class="card-desc">身披「影蝕鎧甲」，揮舞靈骨重錘，眼神中充滿毀滅渴望。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 300</span><span><strong>Speed:</strong> 3</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image60.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【虛無冥尊】· 伊格尼斯</h3>
+            <p class="card-desc">昇華至深淵境界，噴吐暗影虛無息，軀體幾近不滅。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 350</span><span><strong>Speed:</strong> 6</span></div>
+          </div>
+        </article>
+
+        <h2 class="section-group-title"><span class="stage-badge badge-s3">Stage 3</span> 新星科技城：失控機甲</h2>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image58.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【超維紅蓮】· 熾焰</h3>
+            <p class="card-desc">金屬羽翼下藏有高頻引擎，噴吐穿透性的熱核等離子火。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 200</span><span><strong>Speed:</strong> 8</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image26.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【訊號殲滅者】· 雷霆</h3>
+            <p class="card-desc">超維生命體，操控數據流與高壓離子砲，執掌永恆瞬滅。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 180</span><span><strong>Speed:</strong> 15</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image55.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【鋼巖裁決】· 磐石</h3>
+            <p class="card-desc">黃金要塞，從地底召喚晶簇利刃，羽翼背後藏有等離子齒輪。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 340</span><span><strong>Speed:</strong> 3</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image39.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【劫火要塞】· 泰坦</h3>
+            <p class="card-desc">遠古要塞龜被火龍喚醒，載滿火炮的戰爭要塞，每一步都震撼大地。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 300</span><span><strong>Speed:</strong> 6</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image30.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【雷光獵跡者】· 凱米利</h3>
+            <p class="card-desc">機甲受雷光昇華，配備雷磁眼與超電磁狙擊砲，絕對精準的獵手。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 250</span><span><strong>Speed:</strong> 10</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image59.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【萬象兵裝】· 守衛者零式</h3>
+            <p class="card-desc">全能武裝系統，掌控風、雷、冰、岩五大元素，守護最終決戰關卡。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 360</span><span><strong>Speed:</strong> 4</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image54.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">【新星毀滅者】· 伊格尼斯</h3>
+            <p class="card-desc">機械龍甲與零點能源融合，超新星核心噴射毀滅性高能射線。</p>
+            <div class="card-stats"><span><strong>HP:</strong> 600</span><span><strong>Speed:</strong> 8</span></div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Props Section -->
+      <div id="props" class="gallery-section">
+        <h2 class="section-group-title">⚡ 性能強化類型</h2>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image50.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">星隕的鋒芒</h3>
+            <p class="card-desc">子彈附帶撕裂虛空的銳氣，獲得貫穿萬物的星隕之力。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image33.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">疾風的落葉</h3>
+            <p class="card-desc">射擊時如暴風席捲落葉，獲得散射八方的彈幕。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image17.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">熾熱的果實</h3>
+            <p class="card-desc">子彈在烈焰中急遽膨脹，吞噬視線內的一切。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image15.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">熾烈的龍果</h3>
+            <p class="card-desc">龍血沸騰，子彈蘊含毀滅性的龍息之怒。</p>
+          </div>
+        </article>
+
+        <h2 class="section-group-title">🛡️ 生存與移動強化</h2>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image16.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">星御的壁障</h3>
+            <p class="card-desc">召喚星塵軌道，凝聚出抵禦強襲的星光護盾。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image8.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">不熄的星火</h3>
+            <p class="card-desc">重燃生命之源，治癒 40 點生命並永久擴張 30 點上限。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image19.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">星沙的誓約</h3>
+            <p class="card-desc">星沙引導光芒，使炎誓與艾里昂行進速度獲得神聖增幅。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image48.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">怨靈的禁果</h3>
+            <p class="card-desc">吞噬怨靈之力，使幽影在陰影中移動步履大幅加快。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image18.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">重裝的引擎</h3>
+            <p class="card-desc">引擎過載轟鳴，麥格瑪斯與聚雷爆發出極致推力。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image9.png" class="card-img" /></div>
+          <div class="card-content">
+            <h3 class="card-title">死靈的秘藥</h3>
+            <p class="card-desc">飲下冥界秘藥，使幽行者獲得超越肉身極限的幽步疾行。</p>
+          </div>
+        </article>
+      </div>
+
+      <!-- Scenes Section -->
+      <div id="scenes" class="gallery-section">
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image65.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Home Base</span>
+            <h3 class="card-title">主頁面：克羅姆村</h3>
+            <p class="card-desc">戈歐勒大陸的心臟，也是繼承者們的起始之地。在經歷了無數次龍潮襲擊後，這座村莊呈現出一種奇幻與科技融合的獨特景觀。遠方星空下，古老的艾薩迦堡與新興的霓虹巨塔交相輝映，象徵著破滅後的重生。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image47.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Trial Ground</span>
+            <h3 class="card-title">先祖訓練營 (Training Camp)</h3>
+            <p class="card-desc">繼承者磨練先祖之力的核心秘密基地。這裡設有模擬戰場的「木人陣」與感應先祖氣息的「共鳴法陣」。在誓言石碑前，每位英雄都將覺醒其獨特的戰鬥天賦，為即將到來的宿命之戰做足準備。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image35.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Sacred Hall</span>
+            <h3 class="card-title">遺跡殿堂：遺物選擇 (Sacred Hall)</h3>
+            <p class="card-desc">隱藏於艾薩迦堡最深處的禁地。殿堂中央矗立著三座雕刻著古老文字的石拱門與神祕祭台。這裡是凝聚先祖殘存意志的場所，玩家將在此處感應遺物的召喚，做出左右命運的抉擇。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image22.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Stage 1</span>
+            <h3 class="card-title">關卡一：碎裂峽谷 (Cracked Canyon)</h3>
+            <p class="card-desc">太古火龍伊格尼斯的封印之地。隨著封印瓦解，峽谷呈現出驚心動魄的殘酷美學。翻騰的岩漿與狂暴的雷暴交織，伊格尼斯喚醒了麾下的「空翼軍團」——由熾焰、雷霆與磐石組成的猛禽先鋒在此守護。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image66.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Stage 2</span>
+            <h3 class="card-title">關卡二：幽魂森林 (Gloom Forest)</h3>
+            <p class="card-desc">曾是幽行者隱居的祥和聚落，現已被地脈深處的暗影能量徹底扭曲。原本的守護獸化為絕望的獵手，古木乾枯如手爪，溪流轉為詭譎的紫色魔能，整片森林充滿了令人窒息的死亡與異變氣息。</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img-wrapper"><img src="assets/image63.png" class="card-img" /></div>
+          <div class="card-content">
+            <span class="card-tag">Stage 3</span>
+            <h3 class="card-title">關卡三：新星科技城 (Nova Tech City)</h3>
+            <p class="card-desc">昔日大陸頂尖的科技都市，現已淪為失控機甲的要塞。核心中樞「天穹塔」懸浮於半空，強行吸收天際雷電以驅動三台瘋狂的機甲巨獸。在這裡，末世的崩壞與狂暴的科技武器在此交織成最致命的戰場。</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-copyright">
+        © <span id="year"></span> 林彥廷. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function showSection(sectionId) {
+      const sections = document.querySelectorAll('.gallery-section');
+      sections.forEach(s => s.classList.remove('active'));
+
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(b => b.classList.remove('active'));
+
+      document.getElementById(sectionId).classList.add('active');
+
+      // Find the button that was clicked
+      const clickedBtn = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(sectionId));
+      if (clickedBtn) clickedBtn.classList.add('active');
+
+      if (window.innerWidth < 768) {
+        window.scrollTo({ top: document.querySelector('.tabs').offsetTop - 100, behavior: 'smooth' });
+      }
+    }
+  </script>
+</body>
+
 </html>
