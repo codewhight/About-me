@@ -11,7 +11,7 @@ export default function About() {
               <span className="dot" aria-hidden="true"></span>
               關於我
             </p>
-            <h1 className="hero-title">【實習應徵自傳】林彥廷</h1>
+            <h1 className="hero-title">林彥廷</h1>
             <p className="hero-subtitle">
               具備 RAG 開發實力與優化思維的資工人才。來自新竹，就讀國立金門大學資訊工程系，
               持續以工程化方式解決問題並創造可量化的價值。
