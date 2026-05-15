@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【萬象兵裝】· 守衛者零式｜Gole：破滅與新生</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    :root {
+      --accent: #ff4d4d;
+      --accent-glow: rgba(255, 77, 77, 0.3);
+      --bg-panel: rgba(20, 20, 25, 0.85);
+    }
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background: linear-gradient(rgba(10, 10, 12, 0.85), rgba(10, 10, 12, 0.85)), url('assets/Illustrated Background.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #e0e0e0;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .back-btn {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      padding: 0.6rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .book-container {
+      display: flex;
+      flex: 1;
+      max-width: 1400px;
+      margin: 6rem auto 2rem;
+      width: 90%;
+      background: var(--bg-panel);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+    }
+    .book-container::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('assets/Illustrated Page.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.25;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .left-col {
+      flex: 0 0 45%;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+      background: rgba(0,0,0,0.2);
+    }
+    
+    .right-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .page {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      padding: 3rem;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .page.active {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .big-img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .left-col:hover .big-img {
+      transform: scale(1.05);
+    }
+    
+    .placeholder-img {
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: #888;
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: rgba(0,0,0,0.3);
+    }
+    
+    .title-area {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .tag {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 1rem;
+    }
+    .content-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .content-area::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+    
+    .desc {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    .desc p { margin-top: 0; margin-bottom: 1rem; }
+    
+    .quote {
+      font-style: italic;
+      color: var(--accent);
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
+      background: rgba(255, 77, 77, 0.05);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .stats-area {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stats-title {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .stats-val {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      font-family: monospace;
+    }
+    
+    .skill-card {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .skill-card:hover {
+      border-color: rgba(255, 77, 77, 0.4);
+      background: rgba(255, 77, 77, 0.03);
+      transform: translateX(5px);
+    }
+    
+    .skill-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 1rem;
+    }
+    
+    .skill-icon-container {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    
+    .skill-icon {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    
+    .skill-title-group {
+      flex: 1;
+      width: 100%;
+    }
+    
+    .skill-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .skill-body p {
+      margin: 0 0 0.8rem 0;
+      line-height: 1.6;
+      color: #bbb;
+    }
+    .skill-body p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .skill-visuals {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .skill-visuals img {
+      max-width: 100%;
+      max-height: 500px;
+      border-radius: 8px;
+      display: block;
+      margin: 1rem 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.5);
+      object-fit: contain;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 1rem;
+      flex-shrink: 0;
+    }
+    .page-btn {
+      padding: 0.5rem 1.5rem;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .page-btn:hover:not(:disabled) {
+      background: rgba(255,255,255,0.1);
+      border-color: #fff;
+    }
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    .page-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      cursor: pointer;
+    }
+    .dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    
+    @media (max-width: 992px) {
+      .book-container { flex-direction: column; height: auto; }
+      .left-col { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 2rem 1rem; }
+      .big-img { max-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-btn">← 返回圖鑑</a>
+  
+  <div class="book-container">
+    <div class="left-col">
+      <img src="assets/bosses/image108.png" class="big-img" alt="【萬象兵裝】· 守衛者零式" />
+    </div>
+    
+    <div class="right-col">
+      <!-- Page 1: Story & Stats -->
+      <div class="page active" id="page-1">
+        <div class="title-area">
+          <span class="tag">Stage 3 Boss</span>
+          <h1 class="title">【萬象兵裝】· 守衛者零式</h1>
+        </div>
+        <div class="content-area">
+          <div class="desc"><p>在高聳入雲的新星科技城頂端，曾屹立著這尊被譽為文明之盾的傳奇守衛。當伊格尼斯降臨時，這具機甲雖然失去了運作能源，但其不屈的防禦姿態卻贏得了火龍的極致欣賞。伊格尼斯並沒有摧毀這件完美的工藝品，而是將始祖龍焰作為新的動力源，灌入其能源核心。隨著紅蓮之火的點燃，守衛者零式從長眠中甦醒。</p><p>它不僅繼承了火龍那焚盡萬物的暴戾力量，更因其原本具備的多環境作戰系統，獲得了操控風、雷、冰、岩五大元素的至高權能。它的機械身軀會根據戰場態勢不斷重組武裝，時而化作狂暴的炎之鐵拳，時而化作冷酷的冰之機槍。它是火龍最引以為傲的傑作，守護著通往最終決戰的最後一道關卡——在那全能的武裝之下，任何凡人的勇氣都顯得微不足道。</p></div>
+          <div class="quote">「炎王龍賦予我生命，萬象賦予我權能。在我的守望之下，此地即是文明的終結之所！」</div>
+        </div>
+        <div class="stats-area">
+          <div class="stats-title">Attributes</div>
+          <div class="stats-val">boss屬性 hp:360, speed:4, score:60 </div>
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" disabled>上一頁</button>
+          <div class="page-dots">
+            <div class="dot active" onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(2)">下一頁</button>
+        </div>
+      </div>
+      
+      
+      <div class="page" id="page-2">
+        <div class="title-area">
+          <span class="tag">Skills - Page 1</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一【機神演武・鳴雷碎岩連斬】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            
+          </div>
+          <div class="skill-body">
+            <p>守衛者零式瞬間啟動體內的「雷」與「岩」雙重環境權能，將原本厚重的雙臂裝甲強制解體並重組，化作兩柄閃爍著高壓電漿與堅硬岩石結晶的巨型臂刃。它以極具壓迫感的節奏向前推進並發動連續斬擊：首先揮動左臂，劈出一道撕裂空氣的雷岩刃氣；緊接著右臂以雷霆萬鈞之勢反向揮出第二擊。最後，零式將雙臂高舉，引擎噴發至極限，以開山裂地之勢將雙刃交叉斬下。三道狂暴的劍氣在空中疊加，化作一道毀滅性的巨型交錯斬擊，以摧枯拉朽之勢將前方的一切生命與裝甲切成碎塊。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(1)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot active" onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(3)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-3">
+        <div class="title-area">
+          <span class="tag">Skills - Page 2</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一【機神演武・鳴雷碎岩連斬】 - 【破陣裂地斬】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image15.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 當左臂的雷刃劃破狂風，大地的岩層亦將為之剝落。在此『破陣』的劍氣前，汝等的先鋒防禦不過是一觸即碎的朽木。</p><p>視覺感： 守衛者零式猛烈地向內側揮動左臂，一道巨大的、呈現彎月狀的黃藍色「雷岩劍氣」呼嘯而出。這道劍氣邊緣纏繞著高壓電弧，並夾帶的大量被震碎的岩石碎塊，展現出沉重且銳利的起手壓迫感。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(2)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot active" onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(4)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-4">
+        <div class="title-area">
+          <span class="tag">Skills - Page 3</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一【機神演武・鳴雷碎岩連斬】 - 【斷空狂瀾刃】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image8.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「當右臂的重擊緊隨而至，周遭的空氣都被這股狂暴的質量所排擠。在此『斷空』的雷霆中，感受機神連擊的無間窒息感吧。</p><p>視覺感： 在第一擊的劍氣尚未完全消散之際，零式的右臂緊接著以雷霆萬鈞之勢反向揮出。同樣的彎月形黃藍色劍氣再次噴湧而出，但這次的軌跡與前一擊形成致命的交錯，封鎖了目標的閃避空間。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(3)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot active" onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(5)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-5">
+        <div class="title-area">
+          <span class="tag">Skills - Page 4</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一【機神演武・鳴雷碎岩連斬】 - 【十字隕絕劫】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image219.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 連擊的終焉，即是萬象的判決。當雙刃交叉，雷霆與重岩的能量將引發臨界點的崩壞。在此『十字極刑』之下，化為科技城歷史中一抹無名的灰燼吧！</p><p>視覺感：零式雙臂爆發出最大功率，隨後，它將雙臂的霆岩巨刃高舉並交叉，帶著摧毀一切的氣勢猛然斬下。兩道巨大的劍氣在脫離刃尖的瞬間完美嵌合，形成一道體積驚人、散發著耀眼雷光與岩石碎屑的「X字型毀滅波」。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(4)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot active" onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(6)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-6">
+        <div class="title-area">
+          <span class="tag">Skills - Page 5</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能二【機神武裝・嵐災貫界衝】 - 守衛者零式啟動「風之權能」，其裝甲縫隙噴發出明亮的翠綠色光芒。左臂裝甲迅速重組，將四周的氣流高速壓縮旋轉，形成一柄具備鑽頭功能的「颶風長槍」；右臂則同步將大氣固化，構成一面閃爍著風壓紋路的「暴風盾牆」。憑藉著背部全開的推進器，零式將化作一團翠綠色的毀滅風暴向前衝鋒。颶風長槍在衝刺中會不斷產生向外擴散的真空刃，而右手的盾牆則能彈開一切飛行道具，以勢不可擋之姿將路徑上的障礙物徹底貫穿並粉碎。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image142.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自天空之主的絕對衝擊。當嵐槍揚起，大氣亦將化為汝等的牢籠。零式以肉眼難以捕捉的高速向前推動，衝鋒軌跡上留下半透明的風痕與震動特效，將「萬象守衛」那堅不可摧卻又迅猛如風的霸道感展現得淋漓盡致。</p><p>視覺感：守衛者零式機械身軀被一團狂暴的翠綠色光芒包圍。左手伸出一柄巨大的、由白色旋轉氣流構成的螺旋長槍，槍尖不斷灑落像素化的碎石殘影；右手則持握著一面具備厚重感的風壓盾牌，盾牌四周圍繞著數個小型龍捲風特效。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(5)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot active" onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(7)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-7">
+        <div class="title-area">
+          <span class="tag">Skills - Page 6</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能三【機神武裝・寒淵絕境彈】 - 守衛者零式啟動冰屬性的權能，使核心散熱系統反向進入「超導冷卻」狀態，其左臂裝甲在齒輪翻轉間重組為一挺多管加特林重機槍。槍管表面覆蓋著厚重的寒霜與尖銳晶體，每分鐘能噴吐出數千發蘊含始祖冰能的「極地穿甲彈」。這些彈藥在擊中目標後會迅速炸裂成大範圍的冰霧，不僅能造成物理性的破碎傷害，更會透過熱能奪取效應，強行凍結目標的動力單元與神經連結，使其在無盡的銀色彈雨中化為一座冰封的墓碑。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image177.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 這是來自寂滅之地的冷酷宣告。當加特林的轟鳴被寒風掩蓋，萬物的律動皆將歸於沉寂。在此『寒淵』的洗禮下，溫暖已成奢求，唯有在晶瑩的死境中，感受生命徹底凍結的終末。</p><p>視覺感： 守衛者零式 軀體被一層冰藍色的極寒氣流所包裹，肩膀與關節處生長出稜角分明的巨大冰晶簇。其左手持握的重型加特林槍管高速旋轉，前方噴湧出密集的極地穿甲彈，以扇形陣列橫掃戰場。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(6)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot active" onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(8)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-8">
+        <div class="title-area">
+          <span class="tag">Skills - Page 7</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能四【機神武裝・紅蓮煉獄絕】 - 守衛者零式啟動火之權能，將動力爐的熱能輸出提升至超越極限的崩壞邊緣，全身重型裝甲的縫隙噴發出熾熱的龍焰。它那巨大的機械雙拳猶如兩座處於爆發狀態的活火山，匯聚了整個地脈的岩漿能。零式將雙拳連續交替向上揮動，將一顆顆蘊含著毀滅能量的「熔岩核心」如升龍般打向上空。這些熔岩核心在高空迅速重組，凝結成無數顆猶如火龍之拳般的重型隕石，帶著撕裂蒼穹的咆哮聲如暴雨般砸向戰場，凡是被擊中的目標，皆將在百噸級的動能撞擊與數千度的高溫熔岩下徹底消融。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image134.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自火龍傑作的終極暴戾。當紅蓮的意志升空，天空亦將降下毀滅的淚滴。</p><p>視覺感：守衛者零式全身的機械裝甲呈現出過熱的亮橘色，體表流淌著粘稠的熔岩，背後的推進器噴發出極度強烈的火焰氣流。牠穩固身軀，雙拳連續向上揮擊，每一拳皆在空中拉拽出紅蓮火焰的殘影，將一顆顆能量球送入天際。隨後，從空中隨機砸落下數顆表面嵌有熔岩紋路且被烈火包覆的熔岩巨拳。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(7)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot active" onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(9)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-9">
+        <div class="title-area">
+          <span class="tag">Skills - Page 8</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能五【機神武裝・紫冥裂震拳】 - 守衛者零啟動電屬性權能，其巨大的機械雙拳被一層狂暴、扭曲的深紫色「幽冥雷霆」完全包裹，重構成一對具備撕裂空間能力的電漿拳套。隨著機體引擎的怒吼，零式向前方揮出殘影級的連續快拳。每一拳擊出，皆會將雷霆之力壓縮成具備實體破壞力的「紫電拳影」轟向目標。這些拳影不僅具備足以擊穿重型裝甲的動能，更帶有極致的震盪頻率，能在命中瞬間癱瘓敵人的所有電子訊號與運動機能，將目標葬送在無盡的紫色雷暴之中。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image4.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 這是來自萬象機神的憤怒咆哮。當紫色的閃光映入眼簾，汝之命運便已在瞬息間定格。在此『震天拳』的殘影下，感受何謂絕對的速度與武力，在雷鳴中徹底瓦解吧！</p><p>視覺感：守衛者零式全身裝甲縫隙因紫電過載而透出危險的光芒，雙拳被巨大的球狀紫色雷光特效完全包覆。隨著零式快速的揮拳動作，數枚紫電拳影呼嘯而出。這些拳影在半空中錯落有致地前進。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(8)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot active" onclick="goToPage(9)"></div>
+          </div>
+          <button class="page-btn next-btn" disabled>下一頁</button>
+        </div>
+      </div>
+        
+      
+    </div>
+  </div>
+
+  <script>
+    function goToPage(pageNum) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + pageNum).classList.add('active');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【超維紅蓮】· 熾焰｜Gole：破滅與新生</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    :root {
+      --accent: #ff4d4d;
+      --accent-glow: rgba(255, 77, 77, 0.3);
+      --bg-panel: rgba(20, 20, 25, 0.85);
+    }
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background: linear-gradient(rgba(10, 10, 12, 0.85), rgba(10, 10, 12, 0.85)), url('assets/Illustrated Background.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #e0e0e0;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .back-btn {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      padding: 0.6rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .book-container {
+      display: flex;
+      flex: 1;
+      max-width: 1400px;
+      margin: 6rem auto 2rem;
+      width: 90%;
+      background: var(--bg-panel);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+    }
+    .book-container::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('assets/Illustrated Page.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.25;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .left-col {
+      flex: 0 0 45%;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+      background: rgba(0,0,0,0.2);
+    }
+    
+    .right-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .page {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      padding: 3rem;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .page.active {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .big-img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .left-col:hover .big-img {
+      transform: scale(1.05);
+    }
+    
+    .placeholder-img {
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: #888;
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: rgba(0,0,0,0.3);
+    }
+    
+    .title-area {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .tag {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 1rem;
+    }
+    .content-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .content-area::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+    
+    .desc {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    .desc p { margin-top: 0; margin-bottom: 1rem; }
+    
+    .quote {
+      font-style: italic;
+      color: var(--accent);
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
+      background: rgba(255, 77, 77, 0.05);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .stats-area {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stats-title {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .stats-val {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      font-family: monospace;
+    }
+    
+    .skill-card {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .skill-card:hover {
+      border-color: rgba(255, 77, 77, 0.4);
+      background: rgba(255, 77, 77, 0.03);
+      transform: translateX(5px);
+    }
+    
+    .skill-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 1rem;
+    }
+    
+    .skill-icon-container {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    
+    .skill-icon {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    
+    .skill-title-group {
+      flex: 1;
+      width: 100%;
+    }
+    
+    .skill-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .skill-body p {
+      margin: 0 0 0.8rem 0;
+      line-height: 1.6;
+      color: #bbb;
+    }
+    .skill-body p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .skill-visuals {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .skill-visuals img {
+      max-width: 100%;
+      max-height: 500px;
+      border-radius: 8px;
+      display: block;
+      margin: 1rem 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.5);
+      object-fit: contain;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 1rem;
+      flex-shrink: 0;
+    }
+    .page-btn {
+      padding: 0.5rem 1.5rem;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .page-btn:hover:not(:disabled) {
+      background: rgba(255,255,255,0.1);
+      border-color: #fff;
+    }
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    .page-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      cursor: pointer;
+    }
+    .dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    
+    @media (max-width: 992px) {
+      .book-container { flex-direction: column; height: auto; }
+      .left-col { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 2rem 1rem; }
+      .big-img { max-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-btn">← 返回圖鑑</a>
+  
+  <div class="book-container">
+    <div class="left-col">
+      <img src="assets/bosses/image93.png" class="big-img" alt="【超維紅蓮】· 熾焰" />
+    </div>
+    
+    <div class="right-col">
+      <!-- Page 1: Story & Stats -->
+      <div class="page active" id="page-1">
+        <div class="title-area">
+          <span class="tag">Stage 3 Boss</span>
+          <h1 class="title">【超維紅蓮】· 熾焰</h1>
+        </div>
+        <div class="content-area">
+          <div class="desc"><p>當空翼軍團攻陷了代表人類智慧巔峰的「新星科技城」，熾焰並未摧毀那些精密文明，反而將其納為己用。透過科技城中的自動組裝線與高效能能源陣列，熾焰將自身暴戾的火焰與機甲深度融合，進化為超越時代的機械生命體。</p><p>現在的熾焰，金屬羽翼下隱藏著高頻震盪引擎，使其飛行速度突破了音障，每一次振翅都能在空中留下灼熱的電離殘影。其裝甲內部嵌有的「超壓循環系統」能將原本的火焰壓縮至極限，轉化為具備穿透性的熱核等離子火。在科技城的廢墟之上，他不再僅僅是自然的災厄，而是集科技精準與原始狂暴於一身的完美獵殺者。</p></div>
+          <div class="quote">「血肉終將凋零，唯有鋼鐵與不滅之火，方能鑄就永恆的霸權。」</div>
+        </div>
+        <div class="stats-area">
+          <div class="stats-title">Attributes</div>
+          <div class="stats-val">boss屬性 hp:200, speed:8, score:30 </div>
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" disabled>上一頁</button>
+          <div class="page-dots">
+            <div class="dot active" onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(2)">下一頁</button>
+        </div>
+      </div>
+      
+      
+      <div class="page" id="page-2">
+        <div class="title-area">
+          <span class="tag">Skills - Page 1</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一:【紅蓮末日・機凰熱能陣】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            
+          </div>
+          <div class="skill-body">
+            <p>熾焰展開其融合了噴射引擎與古代石甲的巨翼，核心反應爐輸出功率瞬間過載。它將「超維紅蓮」能量實體化，召喚出無數枚具備自我意識的「小型機凰熱能彈」。這些機凰彈並非生物，而是由高壓電漿與機械外殼構成的追蹤載體。它們依循著戰場上的數位矩陣座標，以四種絕對毀滅軌跡（縱橫/固定/隨機）進行俯衝與衝刺。凡是被機凰觸及的區域，空間會產生劇烈的熱解反應，將一切物質蒸發為數位殘餘。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(1)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot active" onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(3)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-3">
+        <div class="title-area">
+          <span class="tag">Skills - Page 2</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一:【紅蓮末日・機凰熱能陣】 - 紅蓮・斷界死線律</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image199.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 來自超維度平面的切割。當紅蓮火鳥劃破長空，生與死的界線將被強行重置。在此律令下，唯有沈淪於無盡的火海，才是唯一的歸宿。</p><p>視覺感： 熾焰發出尖銳的機械唳鳴，雙翼噴射出耀眼的白光。成群的機靈火鳥從側面成列衝出，後方帶著如火箭推進般的像素火尾與藍色電漿殘影。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(2)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot active" onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(4)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-4">
+        <div class="title-area">
+          <span class="tag">Skills - Page 3</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一:【紅蓮末日・機凰熱能陣】 - 紅蓮・天墜崩落相</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image109.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 當蒼穹崩裂，降下的並非甘霖，而是終焉的洗禮。這是來自高緯度的重力審判，將一切抗爭者生生釘死於焦灼的地脈之中。</p><p>視覺感： 熾焰盤旋至高空，雙翼展開呈十字型。無數機靈火鳥頭部向下，化作一枚枚閃爍著赤紅光芒的精密導彈，成排地從天際垂直墜落。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(3)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot active" onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(5)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-5">
+        <div class="title-area">
+          <span class="tag">Skills - Page 4</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一:【紅蓮末日・機凰熱能陣】 - 紅蓮・亂界焚世刑</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image58.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 釋放的原始狩獵本能，在混沌的位面中瘋狂竄動。這是無法預測的『虛位狂潮』，每一隻火鳥都在尋求著生命的頻率，讓汝在混亂的火影中感受極致的窒息。」</p><p>視覺感： 熾焰的機械雙翼高速振動，產生重重殘影。大批機靈火鳥以完全不規則的高度與速度瘋狂竄出。如同一群失控的火之鳥群，將整個戰場化為一片閃爍不定、危機四伏的「無間火網」。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(4)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot active" onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(6)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-6">
+        <div class="title-area">
+          <span class="tag">Skills - Page 5</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一:【紅蓮末日・機凰熱能陣】 - 紅蓮・亂影星降雨</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image64.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 當超維紅蓮徹底釋放能量，世界將回歸最初的火海。這是不具備任何仁慈的隨機肅清，大地將在火鳥的自我獻祭中，迎來最後的凋零樂章。</p><p>視覺感： 戰場上空的空間徹底失序。無數機靈火鳥，如同失去控制的流星雨般從天空中無序地散亂墜下。每一道墜落的火光都在畫面上留下刺眼的像素殘跡，將生者的領域徹底覆蓋在綿延不絕的紅蓮劫火之中。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(5)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot active" onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(7)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-7">
+        <div class="title-area">
+          <span class="tag">Skills - Page 6</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能二:【紅蓮絕影・炎界終焉彈】 - 熾焰內部的紅蓮核心爆發出過載的械火能量，從胸口的動力核心抽取狂暴的紅蓮能量，並將其壓縮於口中。口中噴吐出具備極高的熔岩溫度，凝聚出一顆閃爍著不詳火光的炎界終焉彈。彈頭在噴發瞬間會將被觸及的生靈化為被械火灼燒的焦炭，形成一道無法被抵擋的破壞軌跡。凡是被這股「超維劫火」觸及的物質，分子鍵將瞬間斷裂，化為最原始的虛無殘燼。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image205.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述：當械火核心彈劃破黑暗，墜落的並非餘燼，而是世界重歸寂滅的宣告。在紫冥與械火交織的死線中，汝之靈魂將化為地脈重組的基石。」</p><p>視覺感： 熾焰在空中發出震撼地脈的長嘯，雙翼綻放出深紫色的強光，兩側瞬間閃現數個燃燒著紫黑色幽火的虛空空洞，形成一道封死橫向活動空間的「炎界終焉彈」。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(6)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot active" onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(8)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-8">
+        <div class="title-area">
+          <span class="tag">Skills - Page 7</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能三【紅蓮御極・熱核爆流風】 - 熾焰將其機甲雙翼的熱能導流板開啟至極限，紅蓮核心發出如同噴射引擎般的轟鳴。隨著它向下沉重的一振，雙翼噴湧出的不僅是始祖龍焰，更是經過機械活塞壓縮後的「高壓熱核氣流」。這股氣流在空中爆發，形成一道閃爍著金屬火花的龍捲風刃，以不可阻擋之勢水平橫掃。風壓中夾雜著被高溫熔化的建築殘渣與焦炭，將沿途的一切生命物質與防禦工事瞬間氣化。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image20.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 這是來自鋼鐵羽翼的最後審判。當熱核爆流風掠過大地，落後的文明將在紅蓮的洗禮中重鑄。在此絕對的熱能死線面前，汝等血肉之軀不過是助燃的薪材。</p><p>視覺感： 熾焰雙翼的機械骨架發出耀眼的紅光，引擎排氣口噴射出劇烈的像素火花。隨著它振翅，一個呈現半月弧形且內部不斷旋轉著火紅熱浪的熱核風暴轟然成型。風暴中心閃爍著如熔岩般的金亮核心，邊緣噴濺出大量焦黑的像素碎屑與斷裂的鋼鐵殘渣。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(7)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot active" onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(9)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-9">
+        <div class="title-area">
+          <span class="tag">Skills - Page 8</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能四【紅蓮御極・萬羽炎殺陣】 - 熾焰將內部的紅蓮核心與機甲雙翼的熱能增幅器進行超頻鏈接，使全身的金屬骨架爆發出臨界點的強光。它猛然向下煽動那對龐大的機甲羽翼，雙翼上的數千片高密度金屬羽毛在瞬間被紅蓮之火徹底點燃，形成高密度械火羽刃。這些羽刃以絕對的質量與動能依序噴湧而出，在空中編織出一張覆蓋整個水平面的死亡死線陣列，將妄圖抵擋的一切生命物質徹底絞殺成灰燼。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image201.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自鋼鐵羽翼的最終判決，在絕對的死線面前，任何因果的躲避皆是徒勞。當紅蓮之火交織成陣，汝之靈魂將體會到何謂『不可承受之重』。」</p><p>視覺感： 熾焰雙翼綻放出火光，兩側瞬間閃現數個燃燒著紫黑色幽火的虛空空洞。隨著它向下沉重的一振，雙翼上的機械羽毛被高壓電漿與紅蓮之火徹底點燃。數枚「械火羽刃」呈扇形噴湧而出。這些羽刃在空中劃出參差不齊的軌跡，如同無數道沉重的橫向死線，以絕對的覆蓋面積封鎖戰場。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(8)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot active" onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(10)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-10">
+        <div class="title-area">
+          <span class="tag">Skills - Page 9</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能五【紅蓮瞬轉 ・熱核流星襲】 - 熾焰內部的紅蓮核心發出震鳴，全身機甲骨架在瞬間完成重組——雙翼收攏並鎖定，後置的複式噴射引擎進入「超頻燃燒」狀態。它將自身的形體優化為具備絕對穿透力的流線型態，把積壓的始祖龍焰壓縮於推進器中爆發。當它啟動衝刺，整部機甲將化作一道撕裂大氣的紅焰殘影，以超越音速的重壓對路徑上的所有存在進行「毀滅撞擊」，任何防禦在其絕對的質量動能面前皆會瞬間崩潰。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image208.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 熾焰向前方發動衝鋒。當赤紅的流星劃破地平線，生者的領域將被強行重寫。在此絕對的動能死律面前，任何閃避皆是徒勞，肉體將與鋼鐵一同熔毀於速度的盡頭。」</p><p>視覺感： 熾焰身體發出高溫冷卻的白煙，雙翼向後摺疊鎖定，呈現出極具侵略性的鳥形衝刺姿態。隨即，其尾部的機械噴口噴射出長達數公尺、呈亮藍色且帶有強烈像素閃爍感的「超頻電漿焰」。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(9)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot active" onclick="goToPage(10)"></div>
+          </div>
+          <button class="page-btn next-btn" disabled>下一頁</button>
+        </div>
+      </div>
+        
+      
+    </div>
+  </div>
+
+  <script>
+    function goToPage(pageNum) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + pageNum).classList.add('active');
+    }
+  </script>
+</body>
+</html>

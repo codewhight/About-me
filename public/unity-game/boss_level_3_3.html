@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【鋼巖裁決】· 磐石｜Gole：破滅與新生</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    :root {
+      --accent: #ff4d4d;
+      --accent-glow: rgba(255, 77, 77, 0.3);
+      --bg-panel: rgba(20, 20, 25, 0.85);
+    }
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background: linear-gradient(rgba(10, 10, 12, 0.85), rgba(10, 10, 12, 0.85)), url('assets/Illustrated Background.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #e0e0e0;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .back-btn {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      padding: 0.6rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .book-container {
+      display: flex;
+      flex: 1;
+      max-width: 1400px;
+      margin: 6rem auto 2rem;
+      width: 90%;
+      background: var(--bg-panel);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+    }
+    .book-container::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('assets/Illustrated Page.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.25;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .left-col {
+      flex: 0 0 45%;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+      background: rgba(0,0,0,0.2);
+    }
+    
+    .right-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .page {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      padding: 3rem;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .page.active {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .big-img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .left-col:hover .big-img {
+      transform: scale(1.05);
+    }
+    
+    .placeholder-img {
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: #888;
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: rgba(0,0,0,0.3);
+    }
+    
+    .title-area {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .tag {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 1rem;
+    }
+    .content-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .content-area::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+    
+    .desc {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    .desc p { margin-top: 0; margin-bottom: 1rem; }
+    
+    .quote {
+      font-style: italic;
+      color: var(--accent);
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
+      background: rgba(255, 77, 77, 0.05);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .stats-area {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stats-title {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .stats-val {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      font-family: monospace;
+    }
+    
+    .skill-card {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .skill-card:hover {
+      border-color: rgba(255, 77, 77, 0.4);
+      background: rgba(255, 77, 77, 0.03);
+      transform: translateX(5px);
+    }
+    
+    .skill-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 1rem;
+    }
+    
+    .skill-icon-container {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    
+    .skill-icon {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    
+    .skill-title-group {
+      flex: 1;
+      width: 100%;
+    }
+    
+    .skill-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .skill-body p {
+      margin: 0 0 0.8rem 0;
+      line-height: 1.6;
+      color: #bbb;
+    }
+    .skill-body p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .skill-visuals {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .skill-visuals img {
+      max-width: 100%;
+      max-height: 500px;
+      border-radius: 8px;
+      display: block;
+      margin: 1rem 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.5);
+      object-fit: contain;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 1rem;
+      flex-shrink: 0;
+    }
+    .page-btn {
+      padding: 0.5rem 1.5rem;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .page-btn:hover:not(:disabled) {
+      background: rgba(255,255,255,0.1);
+      border-color: #fff;
+    }
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    .page-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      cursor: pointer;
+    }
+    .dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    
+    @media (max-width: 992px) {
+      .book-container { flex-direction: column; height: auto; }
+      .left-col { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 2rem 1rem; }
+      .big-img { max-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-btn">← 返回圖鑑</a>
+  
+  <div class="book-container">
+    <div class="left-col">
+      <img src="assets/bosses/image45.png" class="big-img" alt="【鋼巖裁決】· 磐石" />
+    </div>
+    
+    <div class="right-col">
+      <!-- Page 1: Story & Stats -->
+      <div class="page active" id="page-1">
+        <div class="title-area">
+          <span class="tag">Stage 3 Boss</span>
+          <h1 class="title">【鋼巖裁決】· 磐石</h1>
+        </div>
+        <div class="content-area">
+          <div class="desc"><p>當磐石踏入新星科技城的禁忌工廠，他那原本沉穩的地脈意志，與城中沉睡的磁極合金產生了跨越時代的共鳴。磐石張開羽翼，將自身核心的高壓岩能灌注於機甲迴路中，化身為一尊撕裂戰場的黃金要塞。</p><p>他不再僅僅是移動緩慢的護盾，而是搭載了高頻脈衝引擎的破陣凶星。他能操控機甲內部生成的硬化晶石，隨心所欲地從地底召喚穿透鋼鐵的晶簇利刃。那一身閃耀著金屬光澤的羽翼背後，隱藏著無數高速旋轉的等離子齒輪，每一次揮擊都足以將現實切碎。</p></div>
+          <div class="quote">「我的羽翼是撕裂天空的利刃。在鋼鐵與岩石的律動下，毀滅即是唯一的判決！」</div>
+        </div>
+        <div class="stats-area">
+          <div class="stats-title">Attributes</div>
+          <div class="stats-val">boss屬性 hp:340, speed:3, score:60 </div>
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" disabled>上一頁</button>
+          <div class="page-dots">
+            <div class="dot active" onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(2)">下一頁</button>
+        </div>
+      </div>
+      
+      
+      <div class="page" id="page-2">
+        <div class="title-area">
+          <span class="tag">Skills - Page 1</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一【地核械壓・星骸重壓落】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            
+          </div>
+          <div class="skill-body">
+            <p>磐石啟動體內的脈衝引擎，將雙翼張開至極限，引導禁忌工廠下方的岩盤與磁極合金進入其機甲迴路。隨即，他在空中凝聚出無數顆被金屬外殼包裹的高密度「硬化晶石」。這些晶隕內部蘊含著不穩定的熱核能量，當磐石下達裁決命令，晶隕將帶著撕裂大氣的震鳴從天而降。這不僅是物理上的碾壓，每一顆晶隕在墜落時產生的重力波動，都足以將敵人的防禦系統強制瓦解，令其在鋼鐵與岩石的律動中歸於塵埃。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(1)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot active" onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(3)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-3">
+        <div class="title-area">
+          <span class="tag">Skills - Page 2</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一【地核械壓・星骸重壓落】 - 【晶隕・寂滅刻】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image202.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 這是來自磐石之翼的左向掃蕩，在絕對的重壓軌跡中，任何抵抗皆為徒勞。當晶隕劃破長空，生者的領域將被強行重置為死寂的荒野。</p><p>視覺感： 磐石雙翼爆發出耀眼的黃金火花，隨即，數顆表面嵌有藍色離子感應燈的合金晶隕從畫面左上方呼嘯而出。以精準的斜向路徑貫穿戰場，落地時產生強烈的屏幕震動感。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(2)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot active" onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(4)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-4">
+        <div class="title-area">
+          <span class="tag">Skills - Page 3</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一【地核械壓・星骸重壓落】 - 【晶隕・右旋終末痕】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image121.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 當蒼穹於右側崩塌，命運的裁決已無可變更。這是鋼鐵意志對入侵者的最終驅逐，在晶隕的墜落路徑上，唯有絕望才是永恆的印記。</p><p>視覺感： 磐石發出沉悶的轟鳴，機甲身軀呈現出蓄勢待發的俯衝姿態。晶隕從畫面右上方落下，形成一道密集的斜向死線陣列，將戰場的活動空間強行壓縮，展現出足以將希望與肉體一併壓垮的威壓感。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(3)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot active" onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(5)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-5">
+        <div class="title-area">
+          <span class="tag">Skills - Page 4</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一【地核械壓・星骸重壓落】 - 【晶隕・亂流蝕心陣】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image13.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 當秩序在混沌的撞擊中消亡，毀滅便成了唯一的語言。這是來自太古深處的無序咆哮，每一顆晶隕皆在渴求著接觸，讓汝在混亂的石雨中感受靈魂的支離破碎。</p><p>視覺感： 這是此招式的最狂暴型態。磐石雙翼猛然一振，天空被厚重的像素雲層遮蔽。晶隕不再遵循任何規律，而是隨機出現在天際各處，以不同的角度與驚人的速度斜向砸向地面。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(4)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot active" onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(6)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-6">
+        <div class="title-area">
+          <span class="tag">Skills - Page 5</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能二【磐核絕響・械鳴裂空嘯】 - 磐石鎖定前方目標，將體內的熱核引擎輸出功率推至極限，使全身的金屬骨架發生高頻率的共振。隨即，他張開鋼鐵鳥喙發出足以撕裂耳膜的毀滅性怒吼。這聲咆哮在機甲喉部的擴張器作用下，凝聚成一道如同實體利刃般的「月牙型音波衝擊」。這道衝擊波攜帶著強大的分子剪切力，所經之處空氣被強行電離，凡是被音波觸及的目標，其防禦架構將在震盪中瞬間分崩離析，靈魂則被這陣金屬狂鳴攪碎。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image115.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自鋼鐵要害的終極音軌。當械鳴裂空嘯劃破寂靜，生者的領域將被高頻的震盪徹底覆蓋。在此『絕響』之下，躲避已無意義。其行進路徑上的空間會產生如玻璃碎裂般的像素特效，展現出足以將一切物理防禦瞬間震碎的絕對破壞力。</p><p>視覺感： 磐石發出震撼電路的低鳴，其金屬頸部的散熱片因高溫而呈現赤紅色。隨著他猛然抬頭怒吼，一道巨大的、呈現鮮紅色半月狀且邊緣閃爍著金黃火花的音波衝擊呼嘯而出。音波刃身周圍纏繞著細小的藍色電漿電弧與震動產生的視覺殘影，帶著撕裂大氣的刺耳尖鳴感橫貫前方。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(5)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot active" onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(7)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-7">
+        <div class="title-area">
+          <span class="tag">Skills - Page 6</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能三【剛巖共鳴・萬劫金晶鋒】 - 磐石將機甲核心的輸出功率調至極限，其胸口的「剛巖核心」爆發出耀眼的黃金光芒。隨著它向地面傳導高壓脈衝，戰場下方的地殼結構會發生瞬間的分子重組，無數尖銳的、帶有機械齒輪構造的「金屬晶體」將以驚人的初速從地底暴戾升起。這些晶體不僅具備岩石的高密度，更被賦予了機械的切割邊緣，任何踏足於大地之上的生靈，都將在晶鋒的洗禮下承受身軀與靈魂被雙重撕裂的痛楚。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image80.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 這是來自地核深處的最終告誡。當晶鋒自裂隙中湧現，大地的懷抱將成為最殘酷的葬場。，展現出足以將整台超導戰車從底部徹底貫穿的霸道衝擊力。</p><p>視覺感： 磐石將其胸口的圓形發動機核心發出高頻率的像素光震，周圍散發出暗金色的能量餘燼。隨即，戰場地面出現如蛛網般的暗紅色裂痕，隨後數個外型如利刃且中心鑲嵌著旋轉齒輪的「金晶鋒」快速向上竄出。晶體表面閃爍著高貴的金屬光澤，升起時伴隨著強烈的地面震動感與碎石飛濺特效。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(6)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot active" onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(8)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-8">
+        <div class="title-area">
+          <span class="tag">Skills - Page 7</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能四【鋼巖超頻・裂空迴旋刃】 - 磐石將機甲雙翼的傳動樞紐全功率開啟，將地底蘊含的堅硬岩石與自身的合金裝甲強行壓鑄，瞬間生成數枚邊緣佈滿鋒利尖齒的「岩械重齒輪」。伴隨著引擎的狂吼，這些齒輪被賦予了極高的初始轉速與獨特的空氣動力學軌跡，呼嘯著被拋出。它們不僅能在去程路徑上無情地切割一切防禦裝甲，更會在達到極限距離後，順著氣流與內部動能的牽引，如嗜血的猛禽般折返迴旋，對敵人造成難以防備的二次背刺絞殺。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image67.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自鋼鐵核心的死亡弧線。當旋轉的嘶吼聲響起，眼前的躲避不過是延緩死亡的幻覺。在此『迴旋』的死律面前，刀鋒將從汝等的背後，完成最後的判決。」</p><p>視覺感：磐石在空中維持著威嚇的展翅姿態，全身金色的機甲裝甲閃爍著耀眼的光芒，引擎噴射出強烈的金黃色高壓火花。隨即，數枚呈現暗古銅色、佈滿金屬尖刺的岩械重齒輪帶著狂暴的旋轉動能飛射而出。齒輪在空中高速自轉，它們在抵達畫面邊緣後，會以更狂野的姿態逆向迴旋飛返，展現出誓要將整個戰場徹底絞碎的極致壓迫感。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(7)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot active" onclick="goToPage(8)"></div>
+          </div>
+          <button class="page-btn next-btn" disabled>下一頁</button>
+        </div>
+      </div>
+        
+      
+    </div>
+  </div>
+
+  <script>
+    function goToPage(pageNum) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + pageNum).classList.add('active');
+    }
+  </script>
+</body>
+</html>

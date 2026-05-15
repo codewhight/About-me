@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【劫火要塞】· 泰坦｜Gole：破滅與新生</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    :root {
+      --accent: #ff4d4d;
+      --accent-glow: rgba(255, 77, 77, 0.3);
+      --bg-panel: rgba(20, 20, 25, 0.85);
+    }
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background: linear-gradient(rgba(10, 10, 12, 0.85), rgba(10, 10, 12, 0.85)), url('assets/Illustrated Background.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #e0e0e0;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .back-btn {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      padding: 0.6rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .book-container {
+      display: flex;
+      flex: 1;
+      max-width: 1400px;
+      margin: 6rem auto 2rem;
+      width: 90%;
+      background: var(--bg-panel);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+    }
+    .book-container::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('assets/Illustrated Page.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.25;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .left-col {
+      flex: 0 0 45%;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+      background: rgba(0,0,0,0.2);
+    }
+    
+    .right-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .page {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      padding: 3rem;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .page.active {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .big-img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .left-col:hover .big-img {
+      transform: scale(1.05);
+    }
+    
+    .placeholder-img {
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: #888;
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: rgba(0,0,0,0.3);
+    }
+    
+    .title-area {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .tag {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 1rem;
+    }
+    .content-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .content-area::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+    
+    .desc {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    .desc p { margin-top: 0; margin-bottom: 1rem; }
+    
+    .quote {
+      font-style: italic;
+      color: var(--accent);
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
+      background: rgba(255, 77, 77, 0.05);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .stats-area {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stats-title {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .stats-val {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      font-family: monospace;
+    }
+    
+    .skill-card {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .skill-card:hover {
+      border-color: rgba(255, 77, 77, 0.4);
+      background: rgba(255, 77, 77, 0.03);
+      transform: translateX(5px);
+    }
+    
+    .skill-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 1rem;
+    }
+    
+    .skill-icon-container {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    
+    .skill-icon {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    
+    .skill-title-group {
+      flex: 1;
+      width: 100%;
+    }
+    
+    .skill-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .skill-body p {
+      margin: 0 0 0.8rem 0;
+      line-height: 1.6;
+      color: #bbb;
+    }
+    .skill-body p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .skill-visuals {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .skill-visuals img {
+      max-width: 100%;
+      max-height: 500px;
+      border-radius: 8px;
+      display: block;
+      margin: 1rem 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.5);
+      object-fit: contain;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 1rem;
+      flex-shrink: 0;
+    }
+    .page-btn {
+      padding: 0.5rem 1.5rem;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .page-btn:hover:not(:disabled) {
+      background: rgba(255,255,255,0.1);
+      border-color: #fff;
+    }
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    .page-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      cursor: pointer;
+    }
+    .dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    
+    @media (max-width: 992px) {
+      .book-container { flex-direction: column; height: auto; }
+      .left-col { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 2rem 1rem; }
+      .big-img { max-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-btn">← 返回圖鑑</a>
+  
+  <div class="book-container">
+    <div class="left-col">
+      <img src="assets/bosses/image157.png" class="big-img" alt="【劫火要塞】· 泰坦" />
+    </div>
+    
+    <div class="right-col">
+      <!-- Page 1: Story & Stats -->
+      <div class="page active" id="page-1">
+        <div class="title-area">
+          <span class="tag">Stage 3 Boss</span>
+          <h1 class="title">【劫火要塞】· 泰坦</h1>
+        </div>
+        <div class="content-area">
+          <div class="desc"><p>在「新星科技城」的遺蹟邊緣，曾沉睡著一隻自遠古時期便與地脈共生的巨型要塞龜。它原本是中立且溫和的守護者，直到太古火龍伊格尼斯降臨，將熾熱的始祖龍焰灌入其動力核心。</p><p>龍焰不僅喚醒了這尊沉睡的巨獸，更激發了它毀滅性的本能。在火焰的加持下，要塞龜背負的科技砲塔全面超頻，龜殼上的複合裝甲被燒得通紅。現在的泰坦不再是防禦的象徵，而是一座載滿火炮的戰爭要塞，它的每一步踏出都伴隨著大地的震顫，每一發砲火都宣告著伊格尼斯對這片土地無情支配的意志。</p></div>
+          <div class="quote">「當沉睡的巨石被火龍點燃，和平的要塞化作移動的煉獄。它的沈默已逝，唯有咆哮的砲火長存。」</div>
+        </div>
+        <div class="stats-area">
+          <div class="stats-title">Attributes</div>
+          <div class="stats-val">boss屬性 hp:300, speed:6, score:30 </div>
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" disabled>上一頁</button>
+          <div class="page-dots">
+            <div class="dot active" onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(2)">下一頁</button>
+        </div>
+      </div>
+      
+      
+      <div class="page" id="page-2">
+        <div class="title-area">
+          <span class="tag">Skills - Page 1</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一【劫火兵裝・煉獄索命追跡彈】 - 泰坦將體內沸騰的龍焰引導至龜殼兩側的重型武裝模組。伴隨著震耳欲聾的金屬摩擦聲，其側邊裝甲的導彈井全面展開。透過被龍焰異化的熱能感應系統，泰坦能死死鎖定目標的生命特徵。隨後，發射井會連續噴吐出數枚尾部拖曳著高溫火光的「追跡導彈」。這些導彈具備極高的飛行機動性，會死咬著敵人的移動軌跡不放，直到在目標身上炸開一朵朵象徵毀滅的紅蓮之花。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image107.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 這是來自遠古巨石的戰爭咆哮。當導彈艙門開啟，整個畫面會因連續的發射與爆炸產生劇烈的震動感，呈現出重裝要塞傾瀉火力的極致壓迫力。在此不熄的火力網中，任何走位都將被無情封殺，唯有在連綿的爆炸中化為焦炭。</p><p>視覺感： 泰坦其原本厚重的龜殼兩側，橘紅色的機械導彈匣緩緩升起並展開。伴隨著劇烈的氣流噴發與火光，數枚索命追跡彈接連升空。導彈在空中劃出圓滑且致命的追蹤弧線，尾部拖曳著濃烈的黑煙與橘黃色火星。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(1)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot active" onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(3)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-3">
+        <div class="title-area">
+          <span class="tag">Skills - Page 2</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能二【熔核過載・千管碎甲瀾】 - 泰坦將其前端龜甲與前腿側邊的重型裝甲板同步解鎖彈開，展露出四門早已因高溫而燒至赤紅的多管加特林機砲。在動力核心的極限超頻下，泰坦向前方無死角地傾瀉出夾雜著「始祖龍焰高爆彈」與「高壓離子穿甲彈」的複合彈幕。這股鋼鐵洪流不只能依靠恐怖的射速撕裂一切物理防禦，附著的高溫更會將沿途的氧氣燃燒殆盡，令敵人在彈雨與窒息的雙重折磨下化為血水。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image137.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 這是來自要塞核心的無情鎮壓。當槍管開始咆哮，這片大地上便再無可供躲藏的死角。在此極致的火力傾瀉中，感受何謂真正的槍林彈雨，呈現出一座戰爭要塞全火力掃蕩的絕對壓迫感與重工業暴力美學。</p><p>視覺感： 泰坦將其頭部兩側與前肢關節處瞬間伸出四管發出刺眼紅光的重型機槍。隨著槍管的高速旋轉，大量子彈如狂風暴雨般噴吐而出。彈幕由兩種不同型態的子彈交織而成：一種是帶有亮藍色科技光暈的穿甲彈，另一種則是包裹著橘紅火焰的高爆彈。這四道火線在空中交錯，形成一片高低起伏、極度密集的推進火網。子彈飛射時拖曳著明亮的尾跡，伴隨著飛濺的彈殼與震耳欲聾的機械開火聲。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(2)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot active" onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(4)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-4">
+        <div class="title-area">
+          <span class="tag">Skills - Page 3</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能三【葬天死兆・重淵碎星彈】 - 泰坦將體內沸騰的能量全部集中於背甲正上方的主砲管中，伴隨著震碎大氣的轟鳴，主砲向前方轟出體積龐大的「重淵碎星彈」。這些特製的重型砲彈外殼由高密度的龜甲合金鑄造，前端包裹著具備極高穿透力的湛藍色高壓離子罩。砲彈不以速度見長，而是以無可匹敵的「質量」與「動能」碾壓一切，在接觸目標的瞬間，內部的紅蓮核心會產生引爆半個戰場的毀滅性衝擊波。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image32.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自遠古巨馱的最沉重吐息。當背上的巨砲揚起，天空亦將為之崩塌。在此『重淵』的質量面前，任何閃避都顯得多餘，展現出「一擊必殺、粉碎一切」的絕對重工業暴力美學。</p><p>視覺感：泰坦背甲正上方的巨大主砲管爆發出數道環狀的橘紅色蓄力閃光。伴隨著極具魄力的全螢幕震動與沉悶的砲擊聲，數枚巨大的重型砲彈呼嘯而出。砲彈在空中以沉重且充滿壓迫感的姿態平緩推進，巨大的體積幾乎封鎖了前方的中段空間。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(3)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot active" onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(5)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-5">
+        <div class="title-area">
+          <span class="tag">Skills - Page 4</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能四【獄炎玄甲・燼世崩王衝】 - 泰坦將四肢的重型關節鎖定並微縮，龐大的機甲身軀瞬間完成衝刺型態的重組。其背部與兩側的引擎群進入極限超頻，噴射出足以融化地表的始祖龍焰。這股狂暴的熱能並未向四周潰散，而是受到巨獸遠古本能的牽引，在其前方強行壓縮、具現化為一面閃耀著「六邊形靈力網格」的超巨型赤焰氣場。當這座「炎之龜甲」伴隨著超音速的推進力向前碾壓時，泰坦本身便化作了一顆燃燒的紅蓮彗星。任何試圖阻擋的生靈，都會先被這面高溫赤壁焚盡血肉，隨後在龐大的質量撞擊下徹底化為飛灰。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image146.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 這是來自遠古巨石的終極狂怒。當業火之盾揚起，要塞的重量將化為不可阻擋的死劫。在此『霸王』的衝鋒路徑上，防禦已成笑話，唯有化作焦炭，才是對這股狂暴之力的唯一敬意。詮釋了「無堅不摧」與「極致重碾」的重工業暴力美學。</p><p>視覺感： 泰坦將身軀呈現出高度的流線型衝刺姿態，背部與後肢的噴射引擎爆發出極度強烈的亮黃色與橘紅色尾焰。在其正前方，狂暴的龍焰交織凝聚，形成了一面巨大的、呈現半月形且帶有清晰的業火巨盾。泰坦以與其龐大體型極不相符的驚人高速向前橫衝，衝刺軌跡上會拉拽出扭曲的熱浪殘影與四散的火星。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(4)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot active" onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(6)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-6">
+        <div class="title-area">
+          <span class="tag">Skills - Page 5</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能五【玄冥臨界・星隕滅世轟】 - 泰坦強行解除體內核心的所有限制，將始祖龍焰的輸出推向連自身裝甲都無法承受的「臨界崩壞」狀態。牠背上的重型巨砲、兩側的導彈井、以及肢體部位的連發機砲在同一時間全數強行展開。龐大的過載能量化作狂暴的黃金雷霆纏繞全身，隨後，牠將庫存的所有彈藥——重型破星彈、索命追跡彈與碎甲高爆彈，毫無保留地一口氣傾瀉而出。這是一場由彈藥與雷火交織而成的毀滅海嘯，將以摧枯拉朽之勢，把眼前的一切生靈與文明殘骸盡數葬送於光芒之中。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image3.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 這是來自太古巨獸的最終輓歌。當黃金的雷光閃耀，所有的慈悲都已耗盡。在此『星爆瀑』的洗禮下，任何的掙扎與防禦皆是虛妄，帶著扭曲空間的金色電流特效與強烈的畫面震顫，以排山倒海之勢吞噬整個戰場，完美詮釋了「飽和式轟炸」的終極暴力美學。</p><p>視覺感：泰坦進入了極度狂暴的狀態，其龐大的身軀與所有的火砲發射口皆被狂暴閃爍的「黃金過載雷霆」緊緊纏繞。伴隨著震碎螢幕的連續轟鳴聲，泰坦將所有武器在同一時間全數發射。這些大小不一、軌跡各異的毀滅兵器交織成一面令人窒息的「實體死亡之牆」，</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(5)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot active" onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" disabled>下一頁</button>
+        </div>
+      </div>
+        
+      
+    </div>
+  </div>
+
+  <script>
+    function goToPage(pageNum) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + pageNum).classList.add('active');
+    }
+  </script>
+</body>
+</html>

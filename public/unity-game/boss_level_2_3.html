@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【冥雷之影】· 雷霆｜Gole：破滅與新生</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    :root {
+      --accent: #ff4d4d;
+      --accent-glow: rgba(255, 77, 77, 0.3);
+      --bg-panel: rgba(20, 20, 25, 0.85);
+    }
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background: linear-gradient(rgba(10, 10, 12, 0.85), rgba(10, 10, 12, 0.85)), url('assets/Illustrated Background.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #e0e0e0;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .back-btn {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      padding: 0.6rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .book-container {
+      display: flex;
+      flex: 1;
+      max-width: 1400px;
+      margin: 6rem auto 2rem;
+      width: 90%;
+      background: var(--bg-panel);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+    }
+    .book-container::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('assets/Illustrated Page.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.25;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .left-col {
+      flex: 0 0 45%;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+      background: rgba(0,0,0,0.2);
+    }
+    
+    .right-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .page {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      padding: 3rem;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .page.active {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .big-img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .left-col:hover .big-img {
+      transform: scale(1.05);
+    }
+    
+    .placeholder-img {
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: #888;
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: rgba(0,0,0,0.3);
+    }
+    
+    .title-area {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .tag {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 1rem;
+    }
+    .content-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .content-area::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+    
+    .desc {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    .desc p { margin-top: 0; margin-bottom: 1rem; }
+    
+    .quote {
+      font-style: italic;
+      color: var(--accent);
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
+      background: rgba(255, 77, 77, 0.05);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .stats-area {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stats-title {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .stats-val {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      font-family: monospace;
+    }
+    
+    .skill-card {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .skill-card:hover {
+      border-color: rgba(255, 77, 77, 0.4);
+      background: rgba(255, 77, 77, 0.03);
+      transform: translateX(5px);
+    }
+    
+    .skill-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 1rem;
+    }
+    
+    .skill-icon-container {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    
+    .skill-icon {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    
+    .skill-title-group {
+      flex: 1;
+      width: 100%;
+    }
+    
+    .skill-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .skill-body p {
+      margin: 0 0 0.8rem 0;
+      line-height: 1.6;
+      color: #bbb;
+    }
+    .skill-body p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .skill-visuals {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .skill-visuals img {
+      max-width: 100%;
+      max-height: 500px;
+      border-radius: 8px;
+      display: block;
+      margin: 1rem 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.5);
+      object-fit: contain;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 1rem;
+      flex-shrink: 0;
+    }
+    .page-btn {
+      padding: 0.5rem 1.5rem;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .page-btn:hover:not(:disabled) {
+      background: rgba(255,255,255,0.1);
+      border-color: #fff;
+    }
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    .page-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      cursor: pointer;
+    }
+    .dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    
+    @media (max-width: 992px) {
+      .book-container { flex-direction: column; height: auto; }
+      .left-col { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 2rem 1rem; }
+      .big-img { max-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-btn">← 返回圖鑑</a>
+  
+  <div class="book-container">
+    <div class="left-col">
+      <img src="assets/bosses/image40.png" class="big-img" alt="【冥雷之影】· 雷霆" />
+    </div>
+    
+    <div class="right-col">
+      <!-- Page 1: Story & Stats -->
+      <div class="page active" id="page-1">
+        <div class="title-area">
+          <span class="tag">Stage 2 Boss</span>
+          <h1 class="title">【冥雷之影】· 雷霆</h1>
+        </div>
+        <div class="content-area">
+          <div class="desc"><p>當雷霆踏入這片被詛咒的森林，他那銳利的電光被暗影徹底染指。原本純淨的藍色閃電，如今混合了幽魂的怨念，轉化為詭譎的冥府綠雷。</p><p>這些雷電不再發出震耳欲聾的轟鳴，而是伴隨著陣陣如泣如訴的鬼嚎。暗影力量不僅強化了他的速度，更讓他的攻擊具備了穿透靈魂的特性。他盤踞在佈滿古老符文的石堆上，四周徘徊的幽魂成了他的能量電池，源源不絕地為其供能。在暗影的加持下，雷霆能瞬間化作一道綠色的虛影消失在林間，並在下一個瞬間，從虛空中降下撕裂靈魂的毀滅重擊。</p></div>
+          <div class="quote">「當綠色的電火在林間閃爍，那是死神正在校準他的雷標。你逃不掉，因為影隨雷行，雷入魂滅。」</div>
+        </div>
+        <div class="stats-area">
+          <div class="stats-title">Attributes</div>
+          <div class="stats-val">boss屬性 hp:240, speed:12, score:45 </div>
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" disabled>上一頁</button>
+          <div class="page-dots">
+            <div class="dot active" onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(2)">下一頁</button>
+        </div>
+      </div>
+      
+      
+      <div class="page" id="page-2">
+        <div class="title-area">
+          <span class="tag">Skills - Page 1</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一:【影嘯冥雷・絕命魂標陣】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            
+          </div>
+          <div class="skill-body">
+            <p>雷霆將自身力量融合幽魂雷鳴形成為極度不穩定的「影蝕電漿」。當他發出如鬼囓般的裂嘯時，綠色的雷光將穿透虛實邊界，在戰場上劃下死神的標記。這不再是單純的能量釋放，而是以雷電為媒介的靈魂收割協議，一旦被綠雷掃過，生者的靈魂頻率將被強行同步至凋零狀態。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(1)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot active" onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(3)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-3">
+        <div class="title-area">
+          <span class="tag">Skills - Page 2</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一:【影嘯冥雷・絕命魂標陣】 - 冥雷・斷魂真理軸</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image18.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 將幽魂的怨念壓縮至絕對的水平線，形成不可跨越的『死神校準線』。這是冥府規律的展現，任何試圖在真理軸線上停留的意志，都將隨著閃電的閃爍而徹底煙滅」</p><p>視覺感： 雷霆全身迸發出刺眼的慘綠色電弧，周圍的幽魂化作綠色的光點匯入其胸口。隨即，一道筆直、穩定且充滿靜電干擾感的綠色像素雷電光束橫向貫穿畫面。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(2)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot active" onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(4)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-4">
+        <div class="title-area">
+          <span class="tag">Skills - Page 3</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一:【影嘯冥雷・絕命魂標陣】 - 影嘯・九幽凶雷變</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image118.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 打破雷電的傳導規律，讓冥雷如同森林中的虛影般變幻莫測。當綠色電火在無序中狂亂跳動，那是命運在進行最終的隨機判決。</p><p>視覺感： 隨著雷霆的雙翼劇烈顫動，多道綠色像素雷電光束在不同的高度、以參差不齊的時間點毫無規律地橫向突襲。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(3)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot active" onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(5)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-5">
+        <div class="title-area">
+          <span class="tag">Skills - Page 4</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能二【影蝕雷災・噬魂雷雲陣】 - 雷霆發出震動地脈的鬼嚎，在戰場上空強行編織出一片「不祥雷雲」。這片雷雲混合了冥府的綠雷與森林的怨念，形成了一個無視物理法則、終日不散的詛咒力場。當雷雲成形，它將無視防禦，源源不絕地將壓縮至極致的「怨靈落雷」垂直降下。凡是被這股「天災雷雨」觸及的靈魂，生命將如焦土般乾枯、崩解，成為這場葬禮最微不足道的殘燭。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image1.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 將太古的雷電與幽魂的怨念共鳴，形成絕對不可逆轉的『天譴之矛』。在此雷鳴聲中，世界將被強行同步至寂滅。</p><p>視覺感： 隨著雷霆的咆哮，戰場上空突兀地浮現出一片巨大的、慘綠色的不祥黑雲的落雷形式，但雷雲本身更具動態感。雷雲之中爆發出陣陣痛苦的幽魂哭喊聲。隨即，無數道筆直的、如極光般絢麗的慘綠色像素雷電光束，從雷雲中成群俯衝而下。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(4)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot active" onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(6)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-6">
+        <div class="title-area">
+          <span class="tag">Skills - Page 5</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能三:【影羽驚雷 ・冥雷羽殛】 - 雷霆狂暴地煽動那對被暗影雷光纏繞的巨翼，將自身精血與森林怨氣凝結成「冥雷影羽」。這些羽毛在脫離翅膀的瞬間會釋放出高頻的綠色電漿，形成具備追尾與爆裂特性的死亡彈幕。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image196.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「將禁忌的雷電意志灌注於凋零之羽，在瞬息間編織出覆蓋因果的雷光之網。在這場由影與雷交織的洗禮中，汝之靈魂將如狂風中的殘燭，在萬千影羽的咆哮下徹底崩解。」</p><p>視覺感： 雷霆在半空中劇烈振翅，雙翼散發出幽暗的紫色光芒與刺眼的綠色電弧。隨即，無數枚帶電的「冥雷影羽」如暴雨般向前方射而出。羽毛周圍纏繞著扭曲的綠色像素電漿，並伴隨著數個尖叫的幽魂殘影。形成一片密不透風、閃爍著詭譎綠光的彈幕，將戰場化為一片無法逃脫的冥雷煉獄。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(5)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot active" onclick="goToPage(6)"></div>
+          </div>
+          <button class="page-btn next-btn" disabled>下一頁</button>
+        </div>
+      </div>
+        
+      
+    </div>
+  </div>
+
+  <script>
+    function goToPage(pageNum) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + pageNum).classList.add('active');
+    }
+  </script>
+</body>
+</html>

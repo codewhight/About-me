@@ -8,7 +8,7 @@ export default function BoardGames() {
         <div className="container">
           <div className="hero-copy reveal">
             <h1 className="hero-title">棋類遊戲</h1>
-            <p className="hero-subtitle">新增兩款可直接在瀏覽器遊玩的棋類作品，皆支援雙人模式與 AI 對戰。</p>
+            <p className="hero-subtitle">新增多款可直接在瀏覽器遊玩的棋類作品，皆支援雙人模式與 AI 對戰。</p>
           </div>
         </div>
       </section>
@@ -35,6 +35,13 @@ export default function BoardGames() {
               <h3>西洋棋（Chess）</h3>
               <p className="muted">8x8 棋盤、雙人/AI 模式、完整支援入堡、升變與強大的 Minimax。</p>
               <a className="btn btn-primary" href={`${import.meta.env.BASE_URL}chess.html`}>開始遊戲</a>
+            </div>
+            
+            <div className="game-card reveal">
+              <div className="game-icon">🚢💣</div>
+              <h3>海戰棋（Battleship）</h3>
+              <p className="muted">10x10 網格，部署五種船隻（不可相鄰），推理並擊沉對手艦隊。支援雙人/AI 模式。</p>
+              <a className="btn btn-primary" href={`${import.meta.env.BASE_URL}battleship.html`}>開始遊戲</a>
             </div>
           </div>
         </div>

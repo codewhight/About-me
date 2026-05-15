@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【新星毀滅者】· 伊格尼斯｜Gole：破滅與新生</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    :root {
+      --accent: #ff4d4d;
+      --accent-glow: rgba(255, 77, 77, 0.3);
+      --bg-panel: rgba(20, 20, 25, 0.85);
+    }
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background: linear-gradient(rgba(10, 10, 12, 0.85), rgba(10, 10, 12, 0.85)), url('assets/Illustrated Background.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #e0e0e0;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .back-btn {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      padding: 0.6rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .book-container {
+      display: flex;
+      flex: 1;
+      max-width: 1400px;
+      margin: 6rem auto 2rem;
+      width: 90%;
+      background: var(--bg-panel);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+    }
+    .book-container::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('assets/Illustrated Page.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.25;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .left-col {
+      flex: 0 0 45%;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+      background: rgba(0,0,0,0.2);
+    }
+    
+    .right-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .page {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      padding: 3rem;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .page.active {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .big-img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .left-col:hover .big-img {
+      transform: scale(1.05);
+    }
+    
+    .placeholder-img {
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: #888;
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: rgba(0,0,0,0.3);
+    }
+    
+    .title-area {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .tag {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 1rem;
+    }
+    .content-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .content-area::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+    
+    .desc {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #ccc;
+      margin-bottom: 1.5rem;
+    }
+    .desc p { margin-top: 0; margin-bottom: 1rem; }
+    
+    .quote {
+      font-style: italic;
+      color: var(--accent);
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
+      background: rgba(255, 77, 77, 0.05);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .stats-area {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stats-title {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .stats-val {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      font-family: monospace;
+    }
+    
+    .skill-card {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .skill-card:hover {
+      border-color: rgba(255, 77, 77, 0.4);
+      background: rgba(255, 77, 77, 0.03);
+      transform: translateX(5px);
+    }
+    
+    .skill-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 1rem;
+    }
+    
+    .skill-icon-container {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    
+    .skill-icon {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    
+    .skill-title-group {
+      flex: 1;
+      width: 100%;
+    }
+    
+    .skill-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .skill-body p {
+      margin: 0 0 0.8rem 0;
+      line-height: 1.6;
+      color: #bbb;
+    }
+    .skill-body p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .skill-visuals {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .skill-visuals img {
+      max-width: 100%;
+      max-height: 500px;
+      border-radius: 8px;
+      display: block;
+      margin: 1rem 0;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.5);
+      object-fit: contain;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 1rem;
+      flex-shrink: 0;
+    }
+    .page-btn {
+      padding: 0.5rem 1.5rem;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .page-btn:hover:not(:disabled) {
+      background: rgba(255,255,255,0.1);
+      border-color: #fff;
+    }
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    .page-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      cursor: pointer;
+    }
+    .dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    
+    @media (max-width: 992px) {
+      .book-container { flex-direction: column; height: auto; }
+      .left-col { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 2rem 1rem; }
+      .big-img { max-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-btn">← 返回圖鑑</a>
+  
+  <div class="book-container">
+    <div class="left-col">
+      <img src="assets/bosses/image214.png" class="big-img" alt="【新星毀滅者】· 伊格尼斯" />
+    </div>
+    
+    <div class="right-col">
+      <!-- Page 1: Story & Stats -->
+      <div class="page active" id="page-1">
+        <div class="title-area">
+          <span class="tag">Stage 3 Boss</span>
+          <h1 class="title">【新星毀滅者】· 伊格尼斯</h1>
+        </div>
+        <div class="content-area">
+          <div class="desc"><p>當伊格尼斯踏碎了新星科技城的最後一道防線，他將城內最尖端的零點能源矩陣與自身龍血融合。那一身由超複合合金鑄造的機械龍甲，不僅能完美導引他那焚盡萬物的原始龍焰，更讓他的動作超越了音速與直覺的範疇。</p><p>他那雙由離子能量構築的幽藍翼膜，揮動間便能引發大規模的電磁坍縮。胸口鑲嵌的超新星核心，正源源不絕地將地脈能量轉化為毀滅性的高能射線。他俯瞰著廢墟般的科技城，在絕對的科技武裝與太古力量面前，舊時代的勇氣不過是轉瞬即逝的火花。</p></div>
+          <div class="quote">「當鋼鐵賦予我永恆，當龍焰化作星辰。世間萬物，皆將在我這機械的神威下，重歸虛無！」</div>
+        </div>
+        <div class="stats-area">
+          <div class="stats-title">Attributes</div>
+          <div class="stats-val">boss屬性 hp:600, speed:8 </div>
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" disabled>上一頁</button>
+          <div class="page-dots">
+            <div class="dot active" onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(2)">下一頁</button>
+        </div>
+      </div>
+      
+      
+      <div class="page" id="page-2">
+        <div class="title-area">
+          <span class="tag">Skills - Page 1</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能一【恆星寂滅・零點龍焰咆】 - 伊格尼斯張開其超複合合金鑄造的龍顎，胸口的「超新星核心」爆發出令人無法直視的幽藍強光。它將體內沸騰的原始龍焰灌入喉部的零點能源矩陣，火焰在離子加速下被壓縮成一顆具備極高質量的「恆星核彈」。這枚龍焰彈不僅蘊含著焚盡萬物的高溫，其核心鑲嵌的電磁感應圈更能在飛行路徑上引發局部空間的重力坍縮。當龍焰彈擊中目標，產生的能量噴發將瞬間氣化一切裝甲，令物質從分子層級徹底重歸虛無。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image211.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自太古意志與永恆鋼鐵的最終裁決。當零點光華在龍喉凝聚，生靈的歸宿便已注定，行進時會帶著劇烈的畫面震顫與空氣扭曲效果，展現出一擊摧毀科技城防線的絕對破壞力。在此『燼滅』的吐息下，勇氣不過是加速燒灼的燃料，見證這份足以重塑世界的神威吧！」</p><p>視覺感：伊格尼斯展現威嚴的機械姿態，背後幽藍色的離子翼膜瘋狂閃爍著雷磁電光。它猛然昂首咆哮，口部噴吐出大量像素化的冷卻霧氣，隨即射出一枚巨大的「零點龍焰彈」。這枚彈藥的核心是一顆耀眼的亮藍色能源球，外層則被狂暴的橘紅色始祖龍焰緊緊包裹，並纏繞著不斷跳動的白色電弧特效。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(1)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot active" onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(3)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-3">
+        <div class="title-area">
+          <span class="tag">Skills - Page 2</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能二【龍魂矩陣・萬龍劫滅陣】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            
+          </div>
+          <div class="skill-body">
+            <p>伊格尼斯透過超頻怒吼觸發核心共振，在戰場周遭撕開無數細微的零點裂縫，召喚出成群的「機甲子嗣火龍」。這些小型火龍經過零點能源的強行強化，速度與破壞力皆已昇華至神性境界，將戰場化為無處可逃的焦熱地獄。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(2)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot active" onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(4)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-4">
+        <div class="title-area">
+          <span class="tag">Skills - Page 3</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能二【龍魂矩陣・萬龍劫滅陣】 - 【星隕餘燼・萬龍伏地擊】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image151.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自古老地脈的平定。當炎群排開，大地將被這股銀色流光強行清洗。在此『伏地』的意志下，任何立於地表之物皆將化為灰燼。」</p><p>視覺感：數尊身披銀色機甲且尾部噴射著橘紅龍焰的小型火龍，會整齊地在固定高度排開。隨後，它們以整齊劃一的初速從畫面一側平移衝向另一側。將戰場中段區域轉化為絕對的灼熱禁區。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(3)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot active" onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(5)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-5">
+        <div class="title-area">
+          <span class="tag">Skills - Page 4</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能二【龍魂矩陣・萬龍劫滅陣】 - 【蒼穹碎裂・天火碎界墜 】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image197.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「防禦毫無意義，當審判自天而降。當龍影貫穿雲層，天空亦將為這份神威而哭泣。在此『天淵』的衝擊下，感受靈魂被龍焰釘在地表的恐懼吧。」</p><p>視覺感： 像素風格。多尊小型火龍，會在固定的垂直座標點出現，隨後如隕石般筆直向下俯衝。掃蕩戰場的任何角落。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(4)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot active" onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(6)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-6">
+        <div class="title-area">
+          <span class="tag">Skills - Page 5</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能二【龍魂矩陣・萬龍劫滅陣】 - 【龍魂瞬影・流火裂隙閃 】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image133.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「混亂即是秩序，無序即是真意。當龍影於星河間閃爍，汝等引以為傲的感官，將在混亂的閃光中徹底失能。」</p><p>視覺感：火龍群從畫面左右兩側隨機的高度呼嘯而出。它們的速度被機甲推至極限，形成一道道交錯的銀色光流。每一頭火龍出現的時機與高度皆無規律，交織成一張充滿隨機性的火力網。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(5)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot active" onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(7)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-7">
+        <div class="title-area">
+          <span class="tag">Skills - Page 6</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能二【龍魂矩陣・萬龍劫滅陣】 - 【龍魂瞬影 ・星火隕墜劫】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image195.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自新星毀滅者的終極洗禮。每一點星火的墜落，皆是世界崩毀的序曲。在此『隕墜』的劫難下，不存在絕對的安全區，祈禱已是徒勞。」</p><p>視覺感： 大量小型火龍會隨機出現在畫面上空，以不規則的頻率與位置向地表發起自殺式的轟炸。火龍墜落軌跡上會產生扭曲的像素風場效果，落地後的爆炸範圍會相互交疊，將整片戰場化為一片沸騰的龍焰汪洋。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(6)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot active" onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(8)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-8">
+        <div class="title-area">
+          <span class="tag">Skills - Page 7</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能三【龍鳴殛天・機龍蒼雷嘯】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            
+          </div>
+          <div class="skill-body">
+            <p>伊格尼斯向蒼穹發出撕裂維度的怒吼，胸口的「超新星核心」爆發出幽藍色的電磁光輝。隨其咆哮，空氣中的游離電子被強行凝聚，在半空中構築出數具散發著冰冷金屬光澤的「機械龍頭」。這些龍頭具備獨立的能量激發模組，能將始祖雷霆壓縮成巨龍之形的電漿束，以突破音障的初速噴吐而出。這股雷光的咆哮不具備實體，卻能輕易燒毀一切精密電路並氣化血肉，將戰場化為一片湛藍的行刑場。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(7)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot active" onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(9)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-9">
+        <div class="title-area">
+          <span class="tag">Skills - Page 8</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能三【龍鳴殛天・機龍蒼雷嘯】 - 【機龍鳴神・蒼藍雷亟束】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image113.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自機神核心的最終警告。當雷鳴在固定維度響起，此世的生機便已定格。在此『蒼藍』的光束下，汝等所信奉的秩序，不過是待宰的羔羊。」</p><p>視覺感：伊格尼斯全身機甲縫隙迸發出狂暴的白色電弧。隨即，畫面左側出現四具呈垂直排列的銀色機械龍頭這些龍頭雙眼閃爍著冰冷的藍光，口中同時噴吐出寬闊且具備極高亮度的「蒼藍雷亟束」。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(8)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot active" onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(10)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-10">
+        <div class="title-area">
+          <span class="tag">Skills - Page 9</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能三【龍鳴殛天・機龍蒼雷嘯】 - 【星毀電霆・瞬滅驚雷影】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image16.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「無序，即是最高層級的毀滅。當驚雷在視界中無預警地跳動，汝等的感知將化為毫無意義的雜訊。在此『瞬滅』的影掠下，感受被大氣意志徹底遺棄的絕望吧。」</p><p>視覺感： 機械龍頭，在畫面的不同高度隨機、斷續地閃現。龍頭出現的瞬間便會擊發細長且狂亂的龍形閃電。這些閃電如同嗜血的蛇群，在廢墟背景下交織成一張充滿隨機性與閃爍感的雷電網。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(9)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot active" onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(11)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-11">
+        <div class="title-area">
+          <span class="tag">Skills - Page 10</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能四【龍鳴神雷・萬流驚雷引】 - 伊格尼斯仰天發出足以令電子系統癱瘓的狂暴龍鳴，胸口的超新星核心釋放出極高頻率的震盪波。隨其怒吼，原本死寂的雲層在零點能源的強行聚攏下，化為數朵盤旋於戰場上空的「蒼藍機械雷雲」。這些雷雲內部鑲嵌著自我運行的火控模組，能從虛空中不斷抽取始祖之雷，並轉化為具備物質崩解能力的「洛雷」向下傾瀉。在此雷暴之下，大地將化為焦土，任何形式的走位都將在不斷生成的電漿瀑布前顯得捉襟見肘。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image192.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自雲霄之上的致命俯瞰。當湛藍的雲霧遮蔽星光，逃亡便成了最可笑的掙扎。在此『驚電』的洗禮下，每一道閃光皆是龍神落下的判決，感受大氣被撕裂的戰慄吧。」</p><p>視覺感： 伊格尼斯胸口爆發出極度刺眼的幽藍強光。隨即在畫面左上方，出現一朵由翻騰的湛藍色像素雲霧與黑色機械核心構成的「葬神雷雲」半空中緩慢且沉重地橫向移動，其核心不斷閃爍著狂暴的白色電弧。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(10)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot active" onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(12)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-12">
+        <div class="title-area">
+          <span class="tag">Skills - Page 11</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能五【機羽絕影・六棱霆光潮】 - 伊格尼斯將龐大的始祖雷霆引導至那雙由超複合合金鑄造的龍翼上，伴隨著雙翼如幻影般的拍動，周圍的空間瞬間凝結出數枚閃爍著幽藍電漿的「六角形零點晶體」。這些晶體作為能量的轉換節點，會將龍翼釋放的電流在中心處極度壓縮，隨後噴吐出具備極高貫穿力的電能子彈。由於晶體數量龐大且能同步連發，戰場將瞬間被致命的蒼藍彈幕所覆蓋，讓獵物在無盡的雷鳴中被徹底粉碎。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image38.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「混亂即是雷霆的本質，無序即是最終的殺戮。當驚雷在視線中無規則跳動，汝等的反射神經將化為毫無意義的廢鐵，在無盡的隨機閃光中，接受這場名為死亡的博弈吧。」</p><p>視覺感： 六角形晶體在伊格尼斯周圍呈現雜亂、斷續的閃現。每一枚晶體出現的瞬間便會朝前方噴發出快慢不一、軌跡各異的雷電彈頭。交織成一張充滿隨機性的湛藍色電網。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(11)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot active" onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(13)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-13">
+        <div class="title-area">
+          <span class="tag">Skills - Page 12</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能六【極炎焚界 ・炎龍折光閃】 - 伊格尼斯引導體內的龍血與零點能源進入「空戰格鬥模組」，其機甲雙翼與尾部的推進器爆發出撕裂雲層的轟鳴。整具軀體被高度濃縮的「赤色漿核」包裹，呈現出流線型的突擊態勢。伊格尼斯以超越音速數倍的初速，在戰場上劃出一道刁鑽的「Z」字型軌跡。每一次的軌跡轉向都會引發小規模的電磁爆燃，產生強大的二次推動力。對目標而言，伊格尼斯不再是可追蹤的實體，而是數道交織在視網膜上的死亡火線，在感知到熱浪的瞬間，裝甲與身軀便已被這股暴戾的衝擊力徹底貫穿。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image87.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 這是來自太古意志的最終突襲。當紅蓮劃破空際，躲避不過是延緩死亡的幻覺。在此影折的火光中，感受空間被強行切開的戰慄，在燼滅中歸於虛無吧！</p><p>視覺感：伊格尼斯化作一道被橘紅色烈焰與幽藍電弧包圍的尖銳流星。它首先從畫面的右上角猛然斜向俯衝至中段，隨後伴隨著一聲尖銳的金屬摩擦聲，軌跡生硬且暴力地轉折向左下角，最後再次折返橫貫整個戰場底端。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(12)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot active" onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(14)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-14">
+        <div class="title-area">
+          <span class="tag">Skills - Page 13</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能七【星核脈動・裂淵械晶牙】 - 伊格尼斯將胸口「超新星核心」的能量輸出全面導向右臂，強大的引力場瞬間牽引戰場周遭的廢墟裝甲與地脈岩層，在其龍腕上強制壓縮、鎔鑄成一副散發著高熱與金屬光澤的「超質量岩械臂鎧」。伴隨著一聲震碎耳膜的咆哮，伊格尼斯將這隻猶如隕石般的巨腕猛然砸向地面。恐怖的動能與零點能量沿著地殼板塊向前狂暴傳導，引發連續的定點空間崩塌。隨後，數道猶如巨龍獠牙般、內部鑲嵌著機械齒輪與能量迴路的「黃金械岩晶體」將以極其暴戾的姿態從地底破土而出，將路徑上的一切生靈與掩體徹底貫穿並碾碎。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image173.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自星球深處的憤怒脈動。當龍腕擊碎大地，深淵的獠牙便會應召喚而來。晶體破土時夾帶著大量的像素碎石、煙塵與地脈能量的橘黃色殘光，展現出極致的重工業厚重感與無可阻擋的地對空破壞力。</p><p>視覺感： 伊格尼斯其右臂被厚重的黃金岩層與機械構造完全包裹，閃爍著耀眼的能量光芒。隨著牠將巨腕狠狠砸入地表，緊接著，伴隨著沉悶的地層斷裂聲，數座巨大的機械岩石晶體從伊格尼斯前方依序暴怒升起。這些晶體呈現高貴的暗金色，表面不僅有岩石的粗糙質感，中心更清晰可見旋轉的齒輪與機械核心。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(13)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot active" onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(15)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-15">
+        <div class="title-area">
+          <span class="tag">Skills - Page 14</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能八【龍骸機武・無間四劫狩】 - 伊格尼斯將胸口的「超新星核心」切換至多工解析模式，龐大的能量被引導至其背部與腹部的重型裝甲之下。伴隨著沉重的機械解鎖聲，四座隱藏的巨型火箭發射井破甲而出。核心將戰場的四種基礎破壞力強行灌注其中，瞬間凝結出四枚帶有獨立追蹤系統的毀滅彈頭：焚盡萬物的「紅蓮龍焰」、撕裂空間的「零點幽雷」、極致質量的「地脈重巖」，以及純粹破甲的「高壓動能」。這四枚火箭彈在發射後會如同擁有蜂群意識般，從不同的刁鑽角度死咬獵物的生命訊號。當四種截然不同的能量在同一目標身上引爆，將引發連鎖的元素崩壞，將獵物的存在痕跡徹底抹除。</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image212.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「這是來自萬物源頭的終極拷問。當四極的審判升空，世間便再無汝等可避之處。在此『四相』的追索下，無論汝等具備何種抗性，皆將在元素的交響中化為齏粉！」</p><p>視覺感：伊格尼斯巨大的雙翼展開，其背部與腹部裝甲向外翻轉，伸出四門閃爍著不同光芒的重型火箭砲管。伴隨著狂暴的推進火光，四枚外觀與屬性截然不同的重型導彈呼嘯而出：這四枚導彈在空中劃出各自獨立且圓滑的追蹤弧線，尾跡在漆黑的背景下交織成一張絢麗卻致命的四色死亡之網。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(14)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot active" onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(16)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-16">
+        <div class="title-area">
+          <span class="tag">Skills - Page 15</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能九【淵龍星骸 ・天穹星岩瀑】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image190.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>伊格尼斯將體內龐大的能量匯聚於龍爪之上，猛然探向地面或虛空，強行吸附並重組周遭的岩石與廢墟金屬。這些物質在其掌心被高壓鎔鑄，結合零點能源的冷卻系統，形成一顆顆佈滿幽藍色能量節點的球型「機械星骸」。隨後，伊格尼斯發出震天怒吼，憑藉純粹的機械怪力將這些數百噸重的星骸狠狠拋向高空。星骸在抵達頂點後，將攜帶著撕裂空氣的動能與令人絕望的質量，化作審判的隕石群重重砸向戰場，將觸碰到的一切生命與裝甲碾成肉眼難見的粉末。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(15)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot active" onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(17)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-17">
+        <div class="title-area">
+          <span class="tag">Skills - Page 16</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能九【淵龍星骸 ・天穹星岩瀑】 - 【星隕・蒼穹崩落軌】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image128.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 這是來自太古霸主的重力宣言。當星骸劃破天幕，大地的哀鳴便是汝等最後的輓歌。</p><p>視覺感： 伊格尼斯將手中凝聚的巨型岩核拋向天際。隨即，數顆呈現球體、表面嵌有六角形湛藍發光節點的灰色機械岩從畫面的左上方呼嘯而出。這些岩球帶著沉重的金屬質感與撕裂空氣的尖銳聲響，沿著一條無可撼動的斜向直線，精準且無情地砸向右下角，落地時引發劇烈的畫面震動與大量碎石飛濺特效。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(16)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot active" onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(18)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-18">
+        <div class="title-area">
+          <span class="tag">Skills - Page 17</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能九【淵龍星骸 ・天穹星岩瀑】 - 【星隕・寂滅斷空痕】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image179.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「星辰的隕落，是神祇對凡人傲慢的最終回應。當第二道陰影覆蓋戰場，生存的空間已被徹底封殺。在此『斷空』的重壓前，感受骨骼寸寸碎裂的絕望吧。」</p><p>視覺感： 伊格尼斯將沉重且巨大的機械岩球從畫面的右上方破雲而出。岩球帶著令人窒息的壓迫感斜向貫穿戰場。巨岩砸落的軌跡上，空氣彷彿都被強大的動能給排空，留下一道道扭曲的視覺殘影。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(17)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot active" onclick="goToPage(18)"></div><div class="dot " onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" onclick="goToPage(19)">下一頁</button>
+        </div>
+      </div>
+        
+      <div class="page" id="page-19">
+        <div class="title-area">
+          <span class="tag">Skills - Page 18</span>
+          <h2 class="title" style="font-size: 2rem; margin-top: 0.5rem;">boss技能九【淵龍星骸 ・天穹星岩瀑】 - 【星隕・無序災厄雨】</h2>
+        </div>
+        <div class="content-area">
+            
+        <div class="skill-card">
+          <div class="skill-header" style="justify-content: center;">
+            <div class="skill-icon-container"><img src="assets/original/image169.png" class="skill-icon" onerror="this.style.display='none'" /></div>
+          </div>
+          <div class="skill-body">
+            <p>描述： 「秩序已死，唯留災厄。當漫天的星骸不再遵循任何軌跡，這片戰場便成了純粹考驗運氣的絞肉機。在無盡的隕石雨中，祈禱死神的雙眼暫時盲目吧。」</p><p>視覺感： 伊格尼斯仰天長嘯，將雙爪中無數的機械岩核瘋狂拋向上空。短暫的死寂過後，大量的機械岩球如狂風暴雨般從畫面頂端隨機砸下。戰場上各處不斷爆發出岩石碎裂的轟鳴與螢幕的劇烈顫抖。</p>
+            <div class="skill-visuals">
+              
+            </div>
+          </div>
+        </div>
+    
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev-btn" onclick="goToPage(18)">上一頁</button>
+          <div class="page-dots">
+            <div class="dot " onclick="goToPage(1)"></div><div class="dot " onclick="goToPage(2)"></div><div class="dot " onclick="goToPage(3)"></div><div class="dot " onclick="goToPage(4)"></div><div class="dot " onclick="goToPage(5)"></div><div class="dot " onclick="goToPage(6)"></div><div class="dot " onclick="goToPage(7)"></div><div class="dot " onclick="goToPage(8)"></div><div class="dot " onclick="goToPage(9)"></div><div class="dot " onclick="goToPage(10)"></div><div class="dot " onclick="goToPage(11)"></div><div class="dot " onclick="goToPage(12)"></div><div class="dot " onclick="goToPage(13)"></div><div class="dot " onclick="goToPage(14)"></div><div class="dot " onclick="goToPage(15)"></div><div class="dot " onclick="goToPage(16)"></div><div class="dot " onclick="goToPage(17)"></div><div class="dot " onclick="goToPage(18)"></div><div class="dot active" onclick="goToPage(19)"></div>
+          </div>
+          <button class="page-btn next-btn" disabled>下一頁</button>
+        </div>
+      </div>
+        
+      
+    </div>
+  </div>
+
+  <script>
+    function goToPage(pageNum) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + pageNum).classList.add('active');
+    }
+  </script>
+</body>
+</html>

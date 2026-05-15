@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="海戰棋遊戲（Battleship）" />
+    <title>海戰棋｜棋類遊戲</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./script.js"></script>
+    <style>
+      .bs-wrap { max-width: 1000px; margin: 0 auto; }
+      .bs-layout { display: grid; grid-template-columns: 1fr 300px; gap: 14px; }
+      
+      .bs-boards-container { display: flex; flex-direction: column; gap: 20px; }
+      @media (min-width: 768px) {
+        .bs-boards-container.playing { flex-direction: row; justify-content: center; }
+      }
+      
+      .bs-board-wrap { display: flex; flex-direction: column; align-items: center; }
+      .bs-board-title { margin-bottom: 8px; font-weight: 600; color: var(--text); }
+      
+      .bs-board {
+        display: grid;
+        grid-template-columns: auto repeat(10, 1fr);
+        gap: 2px;
+        background: var(--panel);
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      
+      .bs-cell {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--muted);
+        position: relative;
+        background: rgba(45, 212, 191, 0.08);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        transition: filter 0.2s;
+      }
+      
+      .bs-header-cell {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        color: var(--muted);
+        background: transparent;
+        border: none;
+      }
+      
+      .bs-cell.interactive { cursor: pointer; }
+      .bs-cell.interactive:hover { filter: brightness(1.2); }
+      
+      /* Ship styling */
+      .bs-cell.ship { background: #475569; border-color: #334155; }
+      .bs-cell.ship-highlight { background: rgba(99, 102, 241, 0.5); }
+      .bs-cell.ship-error { background: rgba(239, 68, 68, 0.5); }
+      
+      /* Hits and misses */
+      .bs-cell.miss::after {
+        content: "";
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--muted);
+      }
+      .bs-cell.hit::after {
+        content: "✕";
+        position: absolute;
+        color: #ef4444;
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .bs-cell.sunk { background: rgba(239, 68, 68, 0.2); }
+      .bs-cell.sunk::after { content: "✕"; color: #ef4444; font-size: 18px; font-weight: bold; }
+      
+      .bs-panel { border: 1px solid var(--border); border-radius: 16px; background: var(--panel); padding: 16px; }
+      .bs-status { margin: 0 0 16px; color: var(--text); font-size: 1.1em; font-weight: 600; min-height: 24px; }
+      
+      .bs-controls { display: grid; gap: 12px; margin-bottom: 16px; }
+      .bs-field { display: grid; gap: 6px; color: var(--muted); font-size: 13px; }
+      .bs-select {
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        color: var(--text);
+      }
+      
+      .bs-ship-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+      .bs-ship-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        background: var(--bg);
+      }
+      .bs-ship-item.selected { border-color: #6366f1; background: rgba(99, 102, 241, 0.1); }
+      .bs-ship-item.placed { opacity: 0.5; text-decoration: line-through; pointer-events: none; }
+      
+      /* Overlay for hotseat mode */
+      .bs-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 20px;
+        color: white;
+        text-align: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .bs-overlay.active { opacity: 1; pointer-events: auto; }
+      .bs-overlay h2 { font-size: 2rem; margin: 0; }
+      
+      @media (max-width: 900px) { .bs-layout { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <canvas class="fx-canvas" aria-hidden="true"></canvas>
+    <div class="cursor-glow" aria-hidden="true"></div>
+    <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-bar"></div></div>
+    <a class="skip-link" href="#content">跳到主要內容</a>
+    <header class="site-header" id="top">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="回到首頁">
+          <span class="brand-mark" aria-hidden="true">◆</span>
+          <span class="brand-text">林彥廷</span>
+        </a>
+        <nav class="nav" aria-label="主要導覽">
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+            <span class="nav-toggle-icon" aria-hidden="true"></span>
+            <span class="sr-only">開啟/關閉選單</span>
+          </button>
+          <div class="nav-menu" id="nav-menu">
+            <a class="nav-link" href="index.html#projects">作品</a>
+            <a class="nav-link" href="board-games.html">棋類遊戲</a>
+            <a class="nav-link" href="games.html">遊戲集</a>
+          </div>
+        </nav>
+        <div class="header-actions">
+          <button class="theme-toggle" type="button" aria-label="切換深色模式">
+            <span class="theme-toggle-icon" aria-hidden="true"></span>
+          </button>
+          <a class="btn btn-primary" href="index.html#contact">合作邀約</a>
+        </div>
+      </div>
+    </header>
+    <main id="content">
+      <section class="hero section">
+        <div class="container">
+          <div class="hero-copy reveal">
+            <h1 class="hero-title">海戰棋（Battleship）</h1>
+            <p class="hero-subtitle">10x10 網格，部署五種船隻（不可相鄰），推理並擊沉對手艦隊。支援雙人與 AI 對戰。</p>
+          </div>
+        </div>
+      </section>
+      <section class="section">
+        <div class="container bs-wrap">
+          <div class="bs-layout">
+            <section class="panel reveal" style="display: flex; flex-direction: column; align-items: center;">
+              <p class="bs-status" id="status" aria-live="polite">準備階段</p>
+              
+              <div class="bs-boards-container" id="boards-container">
+                <!-- My Port -->
+                <div class="bs-board-wrap" id="my-board-wrap">
+                  <div class="bs-board-title" id="my-board-title">我的港口（部署區）</div>
+                  <div class="bs-board" id="my-board"></div>
+                </div>
+                
+                <!-- Enemy Port -->
+                <div class="bs-board-wrap" id="enemy-board-wrap" style="display: none;">
+                  <div class="bs-board-title" id="enemy-board-title">敵方港口（攻擊區）</div>
+                  <div class="bs-board" id="enemy-board"></div>
+                </div>
+              </div>
+            </section>
+            
+            <aside class="bs-panel reveal">
+              <div class="bs-controls">
+                <label class="bs-field">
+                  <span>模式</span>
+                  <select id="mode" class="bs-select">
+                    <option value="ai">對戰 AI</option>
+                    <option value="pvp">雙人遊玩 (同機接替)</option>
+                  </select>
+                </label>
+              </div>
+              
+              <div id="setup-controls">
+                <h3 class="panel-title" style="margin-bottom: 8px;">部署艦隊</h3>
+                <p class="muted" style="font-size: 12px; margin-bottom: 12px;">點擊選擇船隻，然後在左側棋盤點擊放置。船隻不可相鄰。</p>
+                <button class="btn btn-ghost" id="rotateBtn" type="button" style="width: 100%; margin-bottom: 12px;">目前方向：水平 (點擊旋轉)</button>
+                
+                <div class="bs-ship-list" id="ship-list">
+                  <!-- dynamically filled -->
+                </div>
+                
+                <div style="display: grid; gap: 8px; margin-top: 16px;">
+                  <button class="btn btn-ghost" id="randomPlaceBtn" type="button">隨機佈署</button>
+                  <button class="btn btn-primary" id="confirmSetupBtn" type="button" disabled>確認佈署</button>
+                </div>
+              </div>
+
+              <div id="game-controls" style="display: none;">
+                <h3 class="panel-title" style="margin-bottom: 8px;">艦隊狀態</h3>
+                <div id="fleet-status" style="font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.6;">
+                  <!-- dynamically filled -->
+                </div>
+              </div>
+              
+              <div style="margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px;">
+                <button class="btn btn-ghost" id="restartBtn" type="button" style="width: 100%;">重新開始</button>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p class="muted">© <span data-year></span> 林彥廷. All rights reserved.</p>
+      </div>
+    </footer>
+    
+    <div class="bs-overlay" id="overlay">
+      <h2 id="overlay-title">準備交接</h2>
+      <p id="overlay-desc">請將裝置交給對手，對手準備好後請點擊下方按鈕。</p>
+      <button class="btn btn-primary" id="overlay-btn">我準備好了</button>
+    </div>
+
+    <script>
+      (() => {
+        const SIZE = 10;
+        const SHIPS = [
+          { id: 'carrier', name: '航空母艦', size: 5 },
+          { id: 'battleship', name: '戰艦', size: 4 },
+          { id: 'destroyer', name: '驅逐艦', size: 3 },
+          { id: 'cruiser', name: '巡洋艦', size: 3 },
+          { id: 'patrol', name: '巡邏艦', size: 2 },
+        ];
+        
+        let state = 'setup'; // setup, playing, gameover
+        let mode = 'ai'; // ai, pvp
+        let currentPlayer = 1; // 1 or 2
+        
+        // Player data
+        let p1Data = { ships: [], board: [], attacks: [] };
+        let p2Data = { ships: [], board: [], attacks: [] };
+        
+        // Setup state
+        let selectedShipIndex = -1;
+        let isHorizontal = true;
+        let setupShips = []; // currently placing ships
+        
+        // DOM Elements
+        const myBoardEl = document.getElementById("my-board");
+        const enemyBoardEl = document.getElementById("enemy-board");
+        const statusEl = document.getElementById("status");
+        const modeEl = document.getElementById("mode");
+        const restartBtn = document.getElementById("restartBtn");
+        
+        const myBoardWrap = document.getElementById("my-board-wrap");
+        const enemyBoardWrap = document.getElementById("enemy-board-wrap");
+        const boardsContainer = document.getElementById("boards-container");
+        
+        const setupControls = document.getElementById("setup-controls");
+        const gameControls = document.getElementById("game-controls");
+        const shipListEl = document.getElementById("ship-list");
+        const rotateBtn = document.getElementById("rotateBtn");
+        const randomPlaceBtn = document.getElementById("randomPlaceBtn");
+        const confirmSetupBtn = document.getElementById("confirmSetupBtn");
+        const fleetStatusEl = document.getElementById("fleet-status");
+        
+        const overlay = document.getElementById("overlay");
+        const overlayTitle = document.getElementById("overlay-title");
+        const overlayDesc = document.getElementById("overlay-desc");
+        const overlayBtn = document.getElementById("overlay-btn");
+        
+        const initBoardData = () => Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+        
+        const initGame = () => {
+          state = 'setup';
+          mode = modeEl.value;
+          currentPlayer = 1;
+          p1Data = { ships: [], board: initBoardData(), attacks: initBoardData() };
+          p2Data = { ships: [], board: initBoardData(), attacks: initBoardData() };
+          
+          setupShips = [];
+          selectedShipIndex = -1;
+          isHorizontal = true;
+          
+          setupControls.style.display = 'block';
+          gameControls.style.display = 'none';
+          
+          myBoardWrap.style.display = 'flex';
+          enemyBoardWrap.style.display = 'none';
+          boardsContainer.classList.remove('playing');
+          
+          document.getElementById('my-board-title').textContent = '我的港口（部署區）';
+          
+          updateShipList();
+          rotateBtn.textContent = '目前方向：水平 (點擊旋轉)';
+          updateStatus(`玩家 1 準備階段`);
+          
+          renderSetupBoard();
+        };
+        
+        const updateShipList = () => {
+          shipListEl.innerHTML = '';
+          let allPlaced = true;
+          SHIPS.forEach((ship, idx) => {
+            const placed = setupShips.some(s => s.id === ship.id);
+            if (!placed) allPlaced = false;
+            
+            const div = document.createElement('div');
+            div.className = `bs-ship-item ${placed ? 'placed' : ''} ${idx === selectedShipIndex ? 'selected' : ''}`;
+            div.innerHTML = `<span>${ship.name} (${ship.size}格)</span>`;
+            
+            if (!placed) {
+              div.addEventListener('click', () => {
+                selectedShipIndex = idx;
+                updateShipList();
+              });
+            }
+            shipListEl.appendChild(div);
+          });
+          
+          if (selectedShipIndex === -1 && !allPlaced) {
+            const firstUnplaced = SHIPS.findIndex(ship => !setupShips.some(s => s.id === ship.id));
+            if (firstUnplaced !== -1) {
+              selectedShipIndex = firstUnplaced;
+              updateShipList(); // Recursive but bounded
+              return;
+            }
+          }
+          
+          confirmSetupBtn.disabled = !allPlaced;
+        };
+        
+        // Checking if a ship placement is valid
+        const isValidPlacement = (board, x, y, size, isHoriz) => {
+          if (isHoriz && x + size > SIZE) return false;
+          if (!isHoriz && y + size > SIZE) return false;
+          
+          // Check collision and adjacency (不可相鄰)
+          const startX = Math.max(0, x - 1);
+          const startY = Math.max(0, y - 1);
+          const endX = Math.min(SIZE - 1, isHoriz ? x + size : x + 1);
+          const endY = Math.min(SIZE - 1, isHoriz ? y + 1 : y + size);
+          
+          for (let cy = startY; cy <= endY; cy++) {
+            for (let cx = startX; cx <= endX; cx++) {
+              if (board[cy][cx] !== null) return false;
+            }
+          }
+          return true;
+        };
+        
+        // Randomly place all ships
+        const randomPlace = () => {
+          setupShips = [];
+          const tempBoard = initBoardData();
+          
+          SHIPS.forEach(ship => {
+            let placed = false;
+            while (!placed) {
+              const isHoriz = Math.random() > 0.5;
+              const x = Math.floor(Math.random() * SIZE);
+              const y = Math.floor(Math.random() * SIZE);
+              
+              if (isValidPlacement(tempBoard, x, y, ship.size, isHoriz)) {
+                setupShips.push({ id: ship.id, size: ship.size, x, y, isHorizontal: isHoriz });
+                for (let i = 0; i < ship.size; i++) {
+                  tempBoard[isHoriz ? y : y + i][isHoriz ? x + i : x] = ship.id;
+                }
+                placed = true;
+              }
+            }
+          });
+          selectedShipIndex = -1;
+          updateShipList();
+          renderSetupBoard();
+        };
+        
+        // Draw the setup board
+        const renderSetupBoard = () => {
+          myBoardEl.innerHTML = '';
+          
+          // Header row
+          myBoardEl.appendChild(createHeaderCell(''));
+          for (let i = 0; i < SIZE; i++) {
+            myBoardEl.appendChild(createHeaderCell(String.fromCharCode(65 + i))); // A-J
+          }
+          
+          const tempBoard = initBoardData();
+          setupShips.forEach(s => {
+            for (let i = 0; i < s.size; i++) {
+              tempBoard[s.isHorizontal ? s.y : s.y + i][s.isHorizontal ? s.x + i : s.x] = s.id;
+            }
+          });
+          
+          let hoverX = -1, hoverY = -1;
+          
+          const drawBoard = () => {
+            // Remove old cells except headers
+            while (myBoardEl.childNodes.length > SIZE + 1) {
+              myBoardEl.removeChild(myBoardEl.lastChild);
+            }
+            
+            for (let y = 0; y < SIZE; y++) {
+              myBoardEl.appendChild(createHeaderCell(y + 1)); // 1-10
+              for (let x = 0; x < SIZE; x++) {
+                const cell = document.createElement('div');
+                cell.className = 'bs-cell interactive';
+                
+                if (tempBoard[y][x]) {
+                  cell.classList.add('ship');
+                }
+                
+                // Highlight logic for currently selected ship
+                if (selectedShipIndex !== -1) {
+                  const ship = SHIPS[selectedShipIndex];
+                  const inHoverRange = isHorizontal 
+                    ? (x >= hoverX && x < hoverX + ship.size && y === hoverY)
+                    : (y >= hoverY && y < hoverY + ship.size && x === hoverX);
+                    
+                  if (inHoverRange && hoverX !== -1 && hoverY !== -1) {
+                    if (isValidPlacement(tempBoard, hoverX, hoverY, ship.size, isHorizontal)) {
+                      cell.classList.add('ship-highlight');
+                    } else {
+                      cell.classList.add('ship-error');
+                    }
+                  }
+                }
+                
+                cell.addEventListener('mouseover', () => { hoverX = x; hoverY = y; drawBoard(); });
+                cell.addEventListener('mouseout', () => { hoverX = -1; hoverY = -1; drawBoard(); });
+                cell.addEventListener('click', () => {
+                  if (selectedShipIndex !== -1) {
+                    const ship = SHIPS[selectedShipIndex];
+                    if (isValidPlacement(tempBoard, x, y, ship.size, isHorizontal)) {
+                      setupShips.push({ id: ship.id, size: ship.size, x, y, isHorizontal });
+                      selectedShipIndex = -1;
+                      updateShipList();
+                      renderSetupBoard();
+                    }
+                  } else {
+                    // Remove ship if clicking on it
+                    const shipId = tempBoard[y][x];
+                    if (shipId) {
+                      setupShips = setupShips.filter(s => s.id !== shipId);
+                      updateShipList();
+                      renderSetupBoard();
+                    }
+                  }
+                });
+                
+                // Right click to rotate
+                cell.addEventListener('contextmenu', (e) => {
+                  e.preventDefault();
+                  isHorizontal = !isHorizontal;
+                  rotateBtn.textContent = `目前方向：${isHorizontal ? '水平' : '垂直'} (點擊旋轉)`;
+                  drawBoard();
+                });
+                
+                myBoardEl.appendChild(cell);
+              }
+            }
+          };
+          drawBoard();
+        };
+        
+        const createHeaderCell = (text) => {
+          const cell = document.createElement('div');
+          cell.className = 'bs-header-cell';
+          cell.textContent = text;
+          return cell;
+        };
+        
+        // Finish setup for current player
+        const confirmSetup = () => {
+          if (currentPlayer === 1) {
+            // Save P1 data
+            p1Data.ships = JSON.parse(JSON.stringify(setupShips));
+            setupShips.forEach(s => {
+              for (let i = 0; i < s.size; i++) {
+                p1Data.board[s.isHorizontal ? s.y : s.y + i][s.isHorizontal ? s.x + i : s.x] = s.id;
+              }
+            });
+            
+            if (mode === 'ai') {
+              // Auto setup AI
+              randomPlace();
+              p2Data.ships = JSON.parse(JSON.stringify(setupShips));
+              setupShips.forEach(s => {
+                for (let i = 0; i < s.size; i++) {
+                  p2Data.board[s.isHorizontal ? s.y : s.y + i][s.isHorizontal ? s.x + i : s.x] = s.id;
+                }
+              });
+              startGame();
+            } else {
+              // Switch to P2 setup
+              currentPlayer = 2;
+              setupShips = [];
+              selectedShipIndex = -1;
+              
+              showOverlay('換玩家 2 部署', '請將裝置交給玩家 2，不要偷看！', () => {
+                updateStatus('玩家 2 準備階段');
+                updateShipList();
+                renderSetupBoard();
+              });
+            }
+          } else {
+            // Save P2 data
+            p2Data.ships = JSON.parse(JSON.stringify(setupShips));
+            setupShips.forEach(s => {
+              for (let i = 0; i < s.size; i++) {
+                p2Data.board[s.isHorizontal ? s.y : s.y + i][s.isHorizontal ? s.x + i : s.x] = s.id;
+              }
+            });
+            currentPlayer = 1;
+            
+            showOverlay('準備開戰', '請交回給玩家 1，遊戲即將開始！', () => {
+              startGame();
+            });
+          }
+        };
+        
+        const startGame = () => {
+          state = 'playing';
+          currentPlayer = 1;
+          
+          setupControls.style.display = 'none';
+          gameControls.style.display = 'block';
+          
+          myBoardWrap.style.display = 'flex';
+          enemyBoardWrap.style.display = 'flex';
+          boardsContainer.classList.add('playing');
+          
+          document.getElementById('my-board-title').textContent = '我的港口';
+          
+          renderGameBoards();
+        };
+        
+        const updateStatus = (text) => {
+          statusEl.innerHTML = text;
+        };
+        
+        const updateFleetStatus = () => {
+          const myData = currentPlayer === 1 ? p1Data : p2Data;
+          const enemyData = currentPlayer === 1 ? p2Data : p1Data;
+          
+          const getRemaining = (data) => data.ships.filter(s => !isSunk(data.board, data.attacks === p1Data.attacks ? p2Data.attacks : p1Data.attacks, s.id)).length;
+          
+          fleetStatusEl.innerHTML = `
+            <div><strong>我方剩餘艦隊：</strong> ${getRemaining(myData)} / 5</div>
+            <div><strong>敵方剩餘艦隊：</strong> ${getRemaining(enemyData)} / 5</div>
+          `;
+        };
+        
+        const isSunk = (board, attacks, shipId) => {
+          for (let y = 0; y < SIZE; y++) {
+            for (let x = 0; x < SIZE; x++) {
+              if (board[y][x] === shipId && attacks[y][x] !== 'hit') {
+                return false;
+              }
+            }
+          }
+          return true;
+        };
+        
+        const markSunkShip = (attacks, board, shipId) => {
+          for (let y = 0; y < SIZE; y++) {
+            for (let x = 0; x < SIZE; x++) {
+              if (board[y][x] === shipId) {
+                attacks[y][x] = 'sunk';
+              }
+            }
+          }
+        };
+        
+        const renderGameBoards = () => {
+          if (state !== 'playing') return;
+          
+          const myData = currentPlayer === 1 ? p1Data : p2Data;
+          const enemyData = currentPlayer === 1 ? p2Data : p1Data;
+          const myAttacks = myData.attacks;
+          const enemyAttacks = enemyData.attacks;
+          
+          updateStatus(`輪到 <strong>玩家 ${currentPlayer}${mode === 'ai' && currentPlayer === 1 ? ' (你)' : ''}</strong> 攻擊`);
+          updateFleetStatus();
+          
+          // Render My Board
+          myBoardEl.innerHTML = '';
+          myBoardEl.appendChild(createHeaderCell(''));
+          for (let i = 0; i < SIZE; i++) myBoardEl.appendChild(createHeaderCell(String.fromCharCode(65 + i)));
+          
+          for (let y = 0; y < SIZE; y++) {
+            myBoardEl.appendChild(createHeaderCell(y + 1));
+            for (let x = 0; x < SIZE; x++) {
+              const cell = document.createElement('div');
+              cell.className = 'bs-cell';
+              
+              if (myData.board[y][x]) cell.classList.add('ship');
+              
+              if (enemyAttacks[y][x] === 'miss') cell.classList.add('miss');
+              else if (enemyAttacks[y][x] === 'hit') cell.classList.add('hit');
+              else if (enemyAttacks[y][x] === 'sunk') cell.classList.add('sunk');
+              
+              myBoardEl.appendChild(cell);
+            }
+          }
+          
+          // Render Enemy Board
+          enemyBoardEl.innerHTML = '';
+          enemyBoardEl.appendChild(createHeaderCell(''));
+          for (let i = 0; i < SIZE; i++) enemyBoardEl.appendChild(createHeaderCell(String.fromCharCode(65 + i)));
+          
+          for (let y = 0; y < SIZE; y++) {
+            enemyBoardEl.appendChild(createHeaderCell(y + 1));
+            for (let x = 0; x < SIZE; x++) {
+              const cell = document.createElement('div');
+              cell.className = 'bs-cell interactive';
+              
+              if (myAttacks[y][x] === 'miss') cell.classList.add('miss');
+              else if (myAttacks[y][x] === 'hit') cell.classList.add('hit');
+              else if (myAttacks[y][x] === 'sunk') cell.classList.add('sunk');
+              
+              if (!myAttacks[y][x]) {
+                cell.addEventListener('click', () => handleAttack(x, y));
+              } else {
+                cell.classList.remove('interactive');
+              }
+              
+              enemyBoardEl.appendChild(cell);
+            }
+          }
+        };
+        
+        const handleAttack = (x, y) => {
+          if (state !== 'playing') return;
+          
+          const myData = currentPlayer === 1 ? p1Data : p2Data;
+          const enemyData = currentPlayer === 1 ? p2Data : p1Data;
+          const myAttacks = myData.attacks;
+          
+          if (myAttacks[y][x]) return; // Already attacked
+          
+          const targetShip = enemyData.board[y][x];
+          
+          if (targetShip) {
+            myAttacks[y][x] = 'hit';
+            if (isSunk(enemyData.board, myAttacks, targetShip)) {
+              markSunkShip(myAttacks, enemyData.board, targetShip);
+              const shipName = SHIPS.find(s => s.id === targetShip).name;
+              updateStatus(`<strong>命中！敵方的 ${shipName} 沉沒了！</strong>`);
+            } else {
+              updateStatus(`<strong>命中！</strong>`);
+            }
+          } else {
+            myAttacks[y][x] = 'miss';
+            updateStatus(`未擊中。`);
+          }
+          
+          renderGameBoards(); // Show result briefly before switching
+          
+          if (checkWin(enemyData, myAttacks)) {
+            state = 'gameover';
+            updateStatus(`<strong>遊戲結束！玩家 ${currentPlayer} 獲勝！</strong>`);
+            return;
+          }
+          
+          // Switch turn
+          setTimeout(() => {
+            if (state !== 'playing') return;
+            
+            if (mode === 'ai') {
+              currentPlayer = 2; // AI turn
+              updateStatus(`輪到 <strong>AI</strong> 攻擊...`);
+              setTimeout(aiTurn, 1000);
+            } else {
+              currentPlayer = currentPlayer === 1 ? 2 : 1;
+              showOverlay(`換玩家 ${currentPlayer} 的回合`, `請將裝置交給玩家 ${currentPlayer}。`, () => {
+                renderGameBoards();
+              });
+            }
+          }, 1500);
+        };
+        
+        const aiTurn = () => {
+          if (state !== 'playing') return;
+          
+          const myAttacks = p2Data.attacks;
+          let x, y;
+          let valid = false;
+          
+          // Very basic AI: random until hit, then random adjacent.
+          // For simplicity, just pure random among unattacked for now.
+          while (!valid) {
+            x = Math.floor(Math.random() * SIZE);
+            y = Math.floor(Math.random() * SIZE);
+            if (!myAttacks[y][x]) valid = true;
+          }
+          
+          const targetShip = p1Data.board[y][x];
+          if (targetShip) {
+            myAttacks[y][x] = 'hit';
+            if (isSunk(p1Data.board, myAttacks, targetShip)) {
+              markSunkShip(myAttacks, p1Data.board, targetShip);
+            }
+          } else {
+            myAttacks[y][x] = 'miss';
+          }
+          
+          if (checkWin(p1Data, myAttacks)) {
+            state = 'gameover';
+            renderGameBoards(); // Show final board state
+            updateStatus(`<strong>遊戲結束！AI 獲勝！</strong>`);
+            return;
+          }
+          
+          currentPlayer = 1;
+          renderGameBoards();
+        };
+        
+        const checkWin = (enemyData, attacks) => {
+          for (let y = 0; y < SIZE; y++) {
+            for (let x = 0; x < SIZE; x++) {
+              if (enemyData.board[y][x] && attacks[y][x] !== 'hit' && attacks[y][x] !== 'sunk') {
+                return false; // Still standing ships
+              }
+            }
+          }
+          return true; // All ships hit
+        };
+        
+        const showOverlay = (title, desc, callback) => {
+          overlayTitle.textContent = title;
+          overlayDesc.textContent = desc;
+          overlay.classList.add('active');
+          
+          const handler = () => {
+            overlay.classList.remove('active');
+            overlayBtn.removeEventListener('click', handler);
+            callback();
+          };
+          overlayBtn.addEventListener('click', handler);
+        };
+        
+        // Event Listeners
+        rotateBtn.addEventListener('click', () => {
+          isHorizontal = !isHorizontal;
+          rotateBtn.textContent = `目前方向：${isHorizontal ? '水平' : '垂直'} (點擊旋轉)`;
+        });
+        
+        randomPlaceBtn.addEventListener('click', randomPlace);
+        confirmSetupBtn.addEventListener('click', confirmSetup);
+        restartBtn.addEventListener('click', initGame);
+        modeEl.addEventListener('change', initGame);
+        
+        // Start
+        initGame();
+      })();
+    </script>
+  </body>
+</html>
