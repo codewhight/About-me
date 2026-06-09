@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "visitor_name": "陳經理 (大千科技)",
+    "visitor_email": "hr@daqian-tech.com.tw",
+    "message_text": "你好，我們看過你的 React / RAG 作品集，對你在資訊工程與 AI 導覽員專題的實作經驗很有興趣，希望能邀請你前來面試研發工程師職缺。",
+    "reply_text": "陳經理您好，非常感謝您的來信邀請！我已收到您的面試邀請，將會盡快回覆您安排面試的時間。",
+    "is_visible": true,
+    "created_at": "2026-06-09T08:50:00Z"
+  },
+  {
+    "id": 2,
+    "visitor_name": "阿豪 (同班同學)",
+    "visitor_email": "ahaostudio@gmail.com",
+    "message_text": "彥廷，你的五子棋 AI 寫得很強耶！黑棋禁手規則判斷得很精準，找時間來切磋一下！",
+    "reply_text": "哈哈謝啦！改天一定跟你玩幾局！",
+    "is_visible": true,
+    "created_at": "2026-06-09T09:30:00Z"
+  },
+  {
+    "id": 3,
+    "visitor_name": "匿名訪客",
+    "visitor_email": "guest99@yahoo.com.tw",
+    "message_text": "你的個人網站做得很有質感，深色模式和動畫過渡非常流暢，是用什麼 CSS 框架做的嗎？",
+    "reply_text": "謝謝誇獎！這個網站是用純原生 CSS (Vanilla CSS) 開發的喔，沒有使用其他第三方框架，這樣比較能自由掌控效能和自訂樣式！",
+    "is_visible": true,
+    "created_at": "2026-06-09T10:10:00Z"
+  },
+  {
+    "id": 4,
+    "visitor_name": "劉教授 (專題指導教授)",
+    "visitor_email": "professor_liu@nqu.edu.tw",
+    "message_text": "彥廷，這次將 RAG 向量資料庫的研究整理得不錯。有空記得把報告印出來送到辦公室審閱。",
+    "reply_text": "教授您好，我已經整理好了，今天下午會送過去辦公室，謝謝教授的指導！",
+    "is_visible": false,
+    "created_at": "2026-06-09T11:40:00Z"
+  },
+  {
+    "id": 5,
+    "visitor_name": "李技術長",
+    "visitor_email": "cto_lee@innovate-now.io",
+    "message_text": "有注意到你在 Unity 彈幕遊戲中處理物件池優化的想法。想請問你目前有在尋找暑期實習的機會嗎？",
+    "reply_text": null,
+    "is_visible": false,
+    "created_at": "2026-06-09T13:00:00Z"
+  }
+]

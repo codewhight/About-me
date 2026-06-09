@@ -1,0 +1,47 @@
+[
+  {
+    "id": "rec-001",
+    "game_name": "minesweeper",
+    "player_name": "王小明",
+    "score": 0,
+    "completion_time_seconds": 45,
+    "game_metadata": "{\"difficulty\":\"easy\"}",
+    "created_at": "2026-06-09T08:30:00Z"
+  },
+  {
+    "id": "rec-002",
+    "game_name": "brick_breaker",
+    "player_name": "李大同",
+    "score": 3820,
+    "completion_time_seconds": 180,
+    "game_metadata": "{\"score_breakdown\":{\"bricks_broken\":76,\"balls_lost\":1}}",
+    "created_at": "2026-06-09T09:15:00Z"
+  },
+  {
+    "id": "rec-003",
+    "game_name": "othello",
+    "player_name": "張小華",
+    "score": 36,
+    "completion_time_seconds": 320,
+    "game_metadata": "{\"mode\":\"vs_ai\",\"ai_difficulty\":\"medium\",\"player_color\":\"black\",\"final_stones\":{\"black\":36,\"white\":28}}",
+    "created_at": "2026-06-09T10:45:00Z"
+  },
+  {
+    "id": "rec-004",
+    "game_name": "gomoku",
+    "player_name": "陳阿生",
+    "score": 1,
+    "completion_time_seconds": 240,
+    "game_metadata": "{\"mode\":\"double_player\",\"winner\":\"black\",\"moves_count\":45}",
+    "created_at": "2026-06-09T11:20:00Z"
+  },
+  {
+    "id": "rec-005",
+    "game_name": "chess",
+    "player_name": "林彥廷",
+    "score": 1,
+    "completion_time_seconds": 680,
+    "game_metadata": "{\"mode\":\"vs_ai\",\"ai_difficulty\":\"hard_depth3\",\"winner\":\"player_white\",\"moves\":[\"e4\",\"e5\",\"Nf3\",\"Nc6\"]}",
+    "created_at": "2026-06-09T12:05:00Z"
+  }
+]

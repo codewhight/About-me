@@ -150,6 +150,77 @@ app.delete('/api/todos/:id', (req, res) => {
   }
 });
 
+// --- Additional Database Features (Leaderboards & Message Board) ---
+const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
+const RECORDS_FILE = path.join(DATA_DIR, 'game_records.json');
+
+// Ensure files exist
+if (!fs.existsSync(MESSAGES_FILE)) {
+  fs.writeFileSync(MESSAGES_FILE, JSON.stringify([], null, 2), 'utf-8');
+}
+if (!fs.existsSync(RECORDS_FILE)) {
+  fs.writeFileSync(RECORDS_FILE, JSON.stringify([], null, 2), 'utf-8');
+}
+
+function readJSON(file) {
+  try {
+    const data = fs.readFileSync(file, 'utf-8');
+    return JSON.parse(data) || [];
+  } catch (error) {
+    console.error('Error reading file:', file, error);
+    return [];
+  }
+}
+
+function writeJSON(file, data) {
+  try {
+    fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
+    return true;
+  } catch (error) {
+    console.error('Error writing file:', file, error);
+    return false;
+  }
+}
+
+// 6. Get all messages
+app.get('/api/messages', (req, res) => {
+  const messages = readJSON(MESSAGES_FILE);
+  res.json(messages);
+});
+
+// 7. Create a new message
+app.post('/api/messages', (req, res) => {
+  const { visitor_name, visitor_email, message_text } = req.body;
+
+  if (!visitor_name || !visitor_name.trim() || !message_text || !message_text.trim()) {
+    return res.status(400).json({ message: 'Name and message text are required' });
+  }
+
+  const messages = readJSON(MESSAGES_FILE);
+  const newMsg = {
+    id: Date.now(),
+    visitor_name: visitor_name.trim(),
+    visitor_email: (visitor_email || '').trim(),
+    message_text: message_text.trim(),
+    reply_text: null,
+    is_visible: true, // Auto visible in prototype
+    created_at: new Date().toISOString()
+  };
+
+  messages.push(newMsg);
+  if (writeJSON(MESSAGES_FILE, messages)) {
+    res.status(201).json(newMsg);
+  } else {
+    res.status(500).json({ message: 'Failed to write database' });
+  }
+});
+
+// 8. Get all leaderboard records
+app.get('/api/leaderboard', (req, res) => {
+  const records = readJSON(RECORDS_FILE);
+  res.json(records);
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`[Todo-Blog Backend] Server is running on http://localhost:${PORT}`);

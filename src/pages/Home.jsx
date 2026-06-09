@@ -1,7 +1,133 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+const API_MESSAGES = 'http://localhost:3001/api/messages';
+const LOCAL_MESSAGES_KEY = 'portfolio_messages_fallback';
+
+const FALLBACK_MESSAGES = [
+  {
+    id: 1,
+    visitor_name: "陳經理 (大千科技)",
+    message_text: "你好，我們看過你的 React / RAG 作品集，對你在資訊工程與 AI 導覽員專題的實作經驗很有興趣，希望能邀請你前來面試研發工程師職缺。",
+    reply_text: "陳經理您好，非常感謝您的來信邀請！我已收到您的面試邀請，將會盡快回覆您安排面試的時間。",
+    is_visible: true,
+    created_at: "2026-06-09T08:50:00Z"
+  },
+  {
+    id: 2,
+    visitor_name: "阿豪 (同班同學)",
+    message_text: "彥廷，你的五子棋 AI 寫得很強耶！黑棋禁手規則判斷得很精準，找時間來切磋一下！",
+    reply_text: "哈哈謝啦！改天一定跟你玩幾局！",
+    is_visible: true,
+    created_at: "2026-06-09T09:30:00Z"
+  },
+  {
+    id: 3,
+    visitor_name: "匿名訪客",
+    message_text: "你的個人網站做得很有質感，深色模式和動畫過渡非常流暢，是用什麼 CSS 框架做的嗎？",
+    reply_text: "謝謝誇獎！這個網站是用純原生 CSS (Vanilla CSS) 開發的喔，沒有使用其他第三方框架，這樣比較能自由掌控效能和自訂樣式！",
+    is_visible: true,
+    created_at: "2026-06-09T10:10:00Z"
+  },
+  {
+    id: 4,
+    visitor_name: "劉教授 (專題指導教授)",
+    message_text: "彥廷，這次將 RAG 向量資料庫的研究整理得不錯。有空記得把報告印出來送到辦公室審閱。",
+    reply_text: "教授您好，我已經整理好了，今天下午會送過去辦公室，謝謝教授的指導！",
+    is_visible: true,
+    created_at: "2026-06-09T11:40:00Z"
+  },
+  {
+    id: 5,
+    visitor_name: "李技術長",
+    message_text: "有注意到你在 Unity 彈幕遊戲中處理物件池優化的想法。想請問你目前有在尋找暑期實習的機會嗎？",
+    reply_text: null,
+    is_visible: true,
+    created_at: "2026-06-09T13:00:00Z"
+  }
+];
+
 export default function Home() {
+  const [messages, setMessages] = useState([]);
+  const [visitorName, setVisitorName] = useState('');
+  const [visitorEmail, setVisitorEmail] = useState('');
+  const [messageText, setMessageText] = useState('');
+  const [isConnected, setIsConnected] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
+  const fetchMessages = async () => {
+    try {
+      const response = await fetch(API_MESSAGES);
+      if (!response.ok) throw new Error('Failed to load messages');
+      const data = await response.json();
+      setMessages(data.filter(m => m.is_visible));
+      setIsConnected(true);
+    } catch (error) {
+      console.warn('[Home-Messages] Cannot connect to server, using local fallback.');
+      setIsConnected(false);
+      
+      const localData = localStorage.getItem(LOCAL_MESSAGES_KEY);
+      if (localData) {
+        setMessages(JSON.parse(localData));
+      } else {
+        setMessages(FALLBACK_MESSAGES.filter(m => m.is_visible));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePostMessage = async (e) => {
+    e.preventDefault();
+    if (!visitorName.trim() || !messageText.trim()) return;
+
+    const newMsgObj = {
+      id: Date.now(),
+      visitor_name: visitorName.trim(),
+      visitor_email: visitorEmail.trim(),
+      message_text: messageText.trim(),
+      reply_text: null,
+      is_visible: true,
+      created_at: new Date().toISOString()
+    };
+
+    if (isConnected) {
+      try {
+        const response = await fetch(API_MESSAGES, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            visitor_name: visitorName,
+            visitor_email: visitorEmail,
+            message_text: messageText
+          })
+        });
+        if (!response.ok) throw new Error('Post failed');
+        const savedMsg = await response.json();
+        setMessages([savedMsg, ...messages]);
+      } catch (err) {
+        alert('連線失敗，留言轉入本機儲存');
+        setIsConnected(false);
+        saveOfflineMessage(newMsgObj);
+      }
+    } else {
+      saveOfflineMessage(newMsgObj);
+    }
+
+    setVisitorName('');
+    setVisitorEmail('');
+    setMessageText('');
+  };
+
+  const saveOfflineMessage = (msgObj) => {
+    const updated = [msgObj, ...messages];
+    setMessages(updated);
+    localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(updated));
+  };
   return (
     <>
       <section className="hero section">
@@ -368,47 +494,234 @@ export default function Home() {
       </section>
 
       <section className="section" id="contact">
+        <style>{`
+          .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 24px;
+          }
+          @media (max-width: 768px) {
+            .contact-layout {
+              grid-template-columns: 1fr;
+            }
+          }
+          .message-wall-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          }
+          .message-scroll-area {
+            max-height: 320px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-right: 8px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+          }
+          .message-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            animation: slideDown 0.3s ease-out;
+          }
+          .message-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+          }
+          .visitor-name {
+            font-weight: 700;
+            color: var(--primary);
+          }
+          .message-date {
+            color: var(--muted);
+          }
+          .message-body {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text);
+            white-space: pre-wrap;
+          }
+          .owner-reply-box {
+            background: rgba(124, 92, 255, 0.08);
+            border-left: 3px solid var(--primary);
+            padding: 8px 12px;
+            border-radius: 4px 8px 8px 4px;
+            margin-top: 6px;
+            font-size: 13px;
+          }
+          .owner-reply-title {
+            font-weight: bold;
+            color: #a78bfa;
+            margin-bottom: 4px;
+          }
+          .message-form-container {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 8px;
+          }
+          .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+          }
+          @media (max-width: 480px) {
+            .form-row {
+              grid-template-columns: 1fr;
+            }
+          }
+          .msg-input, .msg-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+          }
+          .msg-input:focus, .msg-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+          }
+          .msg-textarea {
+            min-height: 70px;
+            resize: vertical;
+          }
+        `}</style>
+        
         <div className="container">
           <header className="section-head reveal">
-            <h2 className="section-title">聯絡我</h2>
-            <p className="section-desc">歡迎透過 Email、GitHub 或 LINE 聯繫我。</p>
+            <h2 className="section-title">聯絡與互動留言板</h2>
+            <p className="section-desc">歡迎透過 Email、社群或在下方留言牆寫下您的意見與反饋！</p>
           </header>
 
-          <div className="contact-grid">
-            <div className="panel reveal">
-              <h3 className="panel-title">快速聯絡</h3>
-              <p className="muted">
-                Email：
-                <a className="link" href="mailto:linyan071319@gmail.com">linyan071319@gmail.com</a>
-              </p>
-              <p className="muted">
-                LINE ID：<span className="link" aria-label="LINE ID">brianlin1214</span>
-              </p>
-              <p className="muted">如果你提供需求與時程，我可以回覆估時與建議方案。</p>
-              <div className="contact-actions">
-                <a className="btn btn-primary" href="mailto:linyan071319@gmail.com">寄信給我</a>
-                <button className="btn btn-ghost" type="button" data-copy-email="true">
-                  複製 Email
-                </button>
+          <div className="contact-layout">
+            
+            {/* Left Column: Socials and Direct Contacts */}
+            <div className="panel reveal" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div>
+                <h3 className="panel-title">快速聯絡</h3>
+                <p className="muted" style={{ marginBottom: '8px' }}>
+                  Email：
+                  <a className="link" href="mailto:linyan071319@gmail.com">linyan071319@gmail.com</a>
+                </p>
+                <p className="muted" style={{ marginBottom: '12px' }}>
+                  LINE ID：<span className="link" aria-label="LINE ID">brianlin1214</span>
+                </p>
+                <div className="contact-actions">
+                  <a className="btn btn-small btn-primary" href="mailto:linyan071319@gmail.com">寄信給我</a>
+                  <button className="btn btn-small btn-ghost" type="button" data-copy-email="true">
+                    複製 Email
+                  </button>
+                </div>
               </div>
-              <p className="toast" role="status" aria-live="polite" hidden>已複製到剪貼簿</p>
+              
+              <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '0' }} />
+              
+              <div>
+                <h3 className="panel-title">社群連結</h3>
+                <ul className="social" style={{ paddingLeft: '0', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <li>
+                    <a className="link" href="https://github.com/codewhight" target="_blank" rel="noreferrer">GitHub (codewhight)</a>
+                  </li>
+                  <li>
+                    <span className="muted">LINE ID：brianlin1214</span>
+                  </li>
+                  <li>
+                    <a className="link" href="mailto:linyan071319@gmail.com">Gmail 聯絡</a>
+                  </li>
+                </ul>
+              </div>
             </div>
 
-            <div className="panel reveal">
-              <h3 className="panel-title">社群</h3>
-              <ul className="social">
-                <li>
-                  <a className="link" href="https://github.com/codewhight" target="_blank" rel="noreferrer">GitHub</a>
-                </li>
-                <li>
-                  <span className="muted">LINE ID：brianlin1214</span>
-                </li>
-                <li>
-                  <a className="link" href="mailto:linyan071319@gmail.com">Gmail</a>
-                </li>
-              </ul>
-              <p className="muted">提示：如果你沒有社群，也可以放作品 Demo 或雲端履歷。</p>
+            {/* Right Column: Interactive Message Board (Full-stack) */}
+            <div className="panel reveal message-wall-container">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 className="panel-title" style={{ margin: 0 }}>💬 訪客留言牆</h3>
+                <span style={{ fontSize: '12px', color: isConnected ? '#10b981' : '#f59e0b' }}>
+                  {isConnected ? '🟢 連線模式 (DB)' : '🟡 離線模式 (LocalStorage)'}
+                </span>
+              </div>
+
+              {/* Message scroll list */}
+              <div className="message-scroll-area">
+                {messages.length === 0 ? (
+                  <p style={{ textAlign: 'center', color: 'var(--muted)', padding: '20px 0', fontSize: '13px' }}>
+                    目前尚無留言，歡迎寫下第一篇留言！
+                  </p>
+                ) : (
+                  messages.map(msg => (
+                    <div className="message-card" key={msg.id}>
+                      <div className="message-card-header">
+                        <span className="visitor-name">{msg.visitor_name}</span>
+                        <span className="message-date">
+                          {new Date(msg.created_at).toLocaleDateString('zh-TW')}
+                        </span>
+                      </div>
+                      <div className="message-body">{msg.message_text}</div>
+                      
+                      {msg.reply_text && (
+                        <div className="owner-reply-box">
+                          <div className="owner-reply-title">✍️ 站長回覆：</div>
+                          <div>{msg.reply_text}</div>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Message Submission Form */}
+              <div className="message-form-container">
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '14px' }}>留下一筆訊息：</h4>
+                <form onSubmit={handlePostMessage}>
+                  <div className="form-row">
+                    <input
+                      className="msg-input"
+                      type="text"
+                      required
+                      placeholder="稱呼 / 暱稱 *"
+                      value={visitorName}
+                      onChange={e => setVisitorName(e.target.value)}
+                    />
+                    <input
+                      className="msg-input"
+                      type="email"
+                      placeholder="Email (非必填，不公開)"
+                      value={visitorEmail}
+                      onChange={e => setVisitorEmail(e.target.value)}
+                    />
+                  </div>
+                  <textarea
+                    className="msg-textarea"
+                    required
+                    maxLength="500"
+                    placeholder="請輸入留言內容… *"
+                    value={messageText}
+                    onChange={e => setMessageText(e.target.value)}
+                  />
+                  <button 
+                    className="btn btn-small btn-primary" 
+                    type="submit" 
+                    style={{ width: '100%', marginTop: '10px', fontSize: '12px', padding: '8px' }}
+                  >
+                    發送留言
+                  </button>
+                </form>
+              </div>
             </div>
+
           </div>
         </div>
       </section>
