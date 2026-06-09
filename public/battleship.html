@@ -256,7 +256,7 @@
     </div>
 
     <script>
-      (() => {
+            (() => {
         const SIZE = 10;
         const SHIPS = [
           { id: 'carrier', name: '航空母艦', size: 5 },
@@ -274,10 +274,15 @@
         let p1Data = { ships: [], board: [], attacks: [] };
         let p2Data = { ships: [], board: [], attacks: [] };
         
+        // AI Data
+        let aiTargetQueue = [];
+        
         // Setup state
         let selectedShipIndex = -1;
         let isHorizontal = true;
         let setupShips = []; // currently placing ships
+        let hoverX = -1, hoverY = -1;
+        let pendingPlacement = null; // {x, y} for 2-step confirmation
         
         // DOM Elements
         const myBoardEl = document.getElementById("my-board");
@@ -303,6 +308,49 @@
         const overlayDesc = document.getElementById("overlay-desc");
         const overlayBtn = document.getElementById("overlay-btn");
         
+        // Cached cells arrays to prevent DOM destruction flashes
+        const myCells = Array.from({length: SIZE}, () => Array(SIZE).fill(null));
+        const enemyCells = Array.from({length: SIZE}, () => Array(SIZE).fill(null));
+        
+        const createHeaderCell = (text) => {
+          const cell = document.createElement('div');
+          cell.className = 'bs-header-cell';
+          cell.textContent = text;
+          return cell;
+        };
+
+        const initBoardDOM = (boardEl, cellsArray, isEnemy) => {
+          boardEl.innerHTML = '';
+          boardEl.appendChild(createHeaderCell(''));
+          for (let i = 0; i < SIZE; i++) boardEl.appendChild(createHeaderCell(String.fromCharCode(65 + i)));
+          
+          for (let y = 0; y < SIZE; y++) {
+            boardEl.appendChild(createHeaderCell(y + 1));
+            for (let x = 0; x < SIZE; x++) {
+              const cell = document.createElement('div');
+              cell.className = 'bs-cell';
+              
+              cell.addEventListener('mouseover', () => handleMouseOver(x, y, isEnemy));
+              cell.addEventListener('mouseout', () => handleMouseOut(x, y, isEnemy));
+              cell.addEventListener('click', () => handleClick(x, y, isEnemy));
+              if (!isEnemy) {
+                cell.addEventListener('contextmenu', (e) => {
+                  e.preventDefault();
+                  if (state === 'setup') {
+                    isHorizontal = !isHorizontal;
+                    if (pendingPlacement) pendingPlacement.isHorizontal = isHorizontal;
+                    rotateBtn.textContent = `目前方向：${isHorizontal ? '水平' : '垂直'} (按 R 或右鍵旋轉)`;
+                    renderSetupBoard();
+                  }
+                });
+              }
+              
+              cellsArray[y][x] = cell;
+              boardEl.appendChild(cell);
+            }
+          }
+        };
+
         const initBoardData = () => Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
         
         const initGame = () => {
@@ -312,9 +360,12 @@
           p1Data = { ships: [], board: initBoardData(), attacks: initBoardData() };
           p2Data = { ships: [], board: initBoardData(), attacks: initBoardData() };
           
+          aiTargetQueue = [];
           setupShips = [];
           selectedShipIndex = -1;
           isHorizontal = true;
+          pendingPlacement = null;
+          hoverX = -1; hoverY = -1;
           
           setupControls.style.display = 'block';
           gameControls.style.display = 'none';
@@ -325,8 +376,11 @@
           
           document.getElementById('my-board-title').textContent = '我的港口（部署區）';
           
+          initBoardDOM(myBoardEl, myCells, false);
+          initBoardDOM(enemyBoardEl, enemyCells, true);
+          
           updateShipList();
-          rotateBtn.textContent = '目前方向：水平 (點擊旋轉)';
+          rotateBtn.textContent = '目前方向：水平 (按 R 或右鍵旋轉)';
           updateStatus(`玩家 1 準備階段`);
           
           renderSetupBoard();
@@ -346,6 +400,7 @@
             if (!placed) {
               div.addEventListener('click', () => {
                 selectedShipIndex = idx;
+                pendingPlacement = null;
                 updateShipList();
               });
             }
@@ -356,20 +411,20 @@
             const firstUnplaced = SHIPS.findIndex(ship => !setupShips.some(s => s.id === ship.id));
             if (firstUnplaced !== -1) {
               selectedShipIndex = firstUnplaced;
-              updateShipList(); // Recursive but bounded
+              pendingPlacement = null;
+              updateShipList();
               return;
             }
           }
           
+          if (allPlaced) selectedShipIndex = -1;
           confirmSetupBtn.disabled = !allPlaced;
         };
         
-        // Checking if a ship placement is valid
         const isValidPlacement = (board, x, y, size, isHoriz) => {
           if (isHoriz && x + size > SIZE) return false;
           if (!isHoriz && y + size > SIZE) return false;
           
-          // Check collision and adjacency (不可相鄰)
           const startX = Math.max(0, x - 1);
           const startY = Math.max(0, y - 1);
           const endX = Math.min(SIZE - 1, isHoriz ? x + size : x + 1);
@@ -383,7 +438,6 @@
           return true;
         };
         
-        // Randomly place all ships
         const randomPlace = () => {
           setupShips = [];
           const tempBoard = initBoardData();
@@ -405,20 +459,77 @@
             }
           });
           selectedShipIndex = -1;
+          pendingPlacement = null;
           updateShipList();
           renderSetupBoard();
         };
-        
-        // Draw the setup board
-        const renderSetupBoard = () => {
-          myBoardEl.innerHTML = '';
-          
-          // Header row
-          myBoardEl.appendChild(createHeaderCell(''));
-          for (let i = 0; i < SIZE; i++) {
-            myBoardEl.appendChild(createHeaderCell(String.fromCharCode(65 + i))); // A-J
+
+        const handleMouseOver = (x, y, isEnemy) => {
+          if (state === 'setup' && !isEnemy) {
+            hoverX = x; hoverY = y;
+            renderSetupBoard();
           }
-          
+        };
+
+        const handleMouseOut = (x, y, isEnemy) => {
+          if (state === 'setup' && !isEnemy) {
+            hoverX = -1; hoverY = -1;
+            renderSetupBoard();
+          }
+        };
+
+        const handleClick = (x, y, isEnemy) => {
+          if (state === 'setup' && !isEnemy) {
+            if (selectedShipIndex !== -1) {
+              const ship = SHIPS[selectedShipIndex];
+              const tempBoard = initBoardData();
+              setupShips.forEach(s => {
+                for (let i = 0; i < s.size; i++) {
+                  tempBoard[s.isHorizontal ? s.y : s.y + i][s.isHorizontal ? s.x + i : s.x] = s.id;
+                }
+              });
+
+              if (pendingPlacement && pendingPlacement.x === x && pendingPlacement.y === y && pendingPlacement.isHorizontal === isHorizontal) {
+                // Confirm placement
+                if (isValidPlacement(tempBoard, x, y, ship.size, isHorizontal)) {
+                  setupShips.push({ id: ship.id, size: ship.size, x, y, isHorizontal });
+                  pendingPlacement = null;
+                  selectedShipIndex = -1;
+                  updateShipList();
+                  renderSetupBoard();
+                }
+              } else {
+                // Set pending placement
+                if (isValidPlacement(tempBoard, x, y, ship.size, isHorizontal)) {
+                  pendingPlacement = { x, y, isHorizontal };
+                  renderSetupBoard();
+                } else {
+                  pendingPlacement = null;
+                  renderSetupBoard();
+                }
+              }
+            } else {
+              // Remove ship if clicking on it
+              const tempBoard = initBoardData();
+              setupShips.forEach(s => {
+                for (let i = 0; i < s.size; i++) {
+                  tempBoard[s.isHorizontal ? s.y : s.y + i][s.isHorizontal ? s.x + i : s.x] = s.id;
+                }
+              });
+              const shipId = tempBoard[y][x];
+              if (shipId) {
+                setupShips = setupShips.filter(s => s.id !== shipId);
+                pendingPlacement = null;
+                updateShipList();
+                renderSetupBoard();
+              }
+            }
+          } else if (state === 'playing' && isEnemy) {
+            handleAttack(x, y);
+          }
+        };
+        
+        const renderSetupBoard = () => {
           const tempBoard = initBoardData();
           setupShips.forEach(s => {
             for (let i = 0; i < s.size; i++) {
@@ -426,88 +537,64 @@
             }
           });
           
-          let hoverX = -1, hoverY = -1;
-          
-          const drawBoard = () => {
-            // Remove old cells except headers
-            while (myBoardEl.childNodes.length > SIZE + 1) {
-              myBoardEl.removeChild(myBoardEl.lastChild);
-            }
-            
-            for (let y = 0; y < SIZE; y++) {
-              myBoardEl.appendChild(createHeaderCell(y + 1)); // 1-10
-              for (let x = 0; x < SIZE; x++) {
-                const cell = document.createElement('div');
-                cell.className = 'bs-cell interactive';
+          for (let y = 0; y < SIZE; y++) {
+            for (let x = 0; x < SIZE; x++) {
+              const cell = myCells[y][x];
+              cell.className = 'bs-cell interactive';
+              
+              if (tempBoard[y][x]) {
+                cell.classList.add('ship');
+              }
+              
+              if (selectedShipIndex !== -1) {
+                const ship = SHIPS[selectedShipIndex];
                 
-                if (tempBoard[y][x]) {
-                  cell.classList.add('ship');
-                }
-                
-                // Highlight logic for currently selected ship
-                if (selectedShipIndex !== -1) {
-                  const ship = SHIPS[selectedShipIndex];
-                  const inHoverRange = isHorizontal 
-                    ? (x >= hoverX && x < hoverX + ship.size && y === hoverY)
-                    : (y >= hoverY && y < hoverY + ship.size && x === hoverX);
-                    
-                  if (inHoverRange && hoverX !== -1 && hoverY !== -1) {
-                    if (isValidPlacement(tempBoard, hoverX, hoverY, ship.size, isHorizontal)) {
-                      cell.classList.add('ship-highlight');
+                if (pendingPlacement) {
+                  const px = pendingPlacement.x, py = pendingPlacement.y;
+                  const isH = pendingPlacement.isHorizontal;
+                  const inPendingRange = isH 
+                    ? (x >= px && x < px + ship.size && y === py)
+                    : (y >= py && y < py + ship.size && x === px);
+                  
+                  if (inPendingRange) {
+                    if (isValidPlacement(tempBoard, px, py, ship.size, isH)) {
+                       cell.classList.add('ship-highlight');
+                       cell.style.filter = 'brightness(1.5)';
+                       cell.style.border = '2px solid #fff';
                     } else {
-                      cell.classList.add('ship-error');
-                    }
-                  }
-                }
-                
-                cell.addEventListener('mouseover', () => { hoverX = x; hoverY = y; drawBoard(); });
-                cell.addEventListener('mouseout', () => { hoverX = -1; hoverY = -1; drawBoard(); });
-                cell.addEventListener('click', () => {
-                  if (selectedShipIndex !== -1) {
-                    const ship = SHIPS[selectedShipIndex];
-                    if (isValidPlacement(tempBoard, x, y, ship.size, isHorizontal)) {
-                      setupShips.push({ id: ship.id, size: ship.size, x, y, isHorizontal });
-                      selectedShipIndex = -1;
-                      updateShipList();
-                      renderSetupBoard();
+                       cell.classList.add('ship-error');
                     }
                   } else {
-                    // Remove ship if clicking on it
-                    const shipId = tempBoard[y][x];
-                    if (shipId) {
-                      setupShips = setupShips.filter(s => s.id !== shipId);
-                      updateShipList();
-                      renderSetupBoard();
-                    }
+                    cell.style.filter = '';
+                    cell.style.border = '';
                   }
-                });
-                
-                // Right click to rotate
-                cell.addEventListener('contextmenu', (e) => {
-                  e.preventDefault();
-                  isHorizontal = !isHorizontal;
-                  rotateBtn.textContent = `目前方向：${isHorizontal ? '水平' : '垂直'} (點擊旋轉)`;
-                  drawBoard();
-                });
-                
-                myBoardEl.appendChild(cell);
+                } else {
+                   cell.style.filter = '';
+                   cell.style.border = '';
+                }
+
+                const isHoverH = isHorizontal;
+                const inHoverRange = isHoverH 
+                  ? (x >= hoverX && x < hoverX + ship.size && y === hoverY)
+                  : (y >= hoverY && y < hoverY + ship.size && x === hoverX);
+                  
+                if (inHoverRange && hoverX !== -1 && hoverY !== -1 && (!pendingPlacement || hoverX !== pendingPlacement.x || hoverY !== pendingPlacement.y)) {
+                  if (isValidPlacement(tempBoard, hoverX, hoverY, ship.size, isHoverH)) {
+                    cell.classList.add('ship-highlight');
+                  } else {
+                    cell.classList.add('ship-error');
+                  }
+                }
+              } else {
+                cell.style.filter = '';
+                cell.style.border = '';
               }
             }
-          };
-          drawBoard();
+          }
         };
         
-        const createHeaderCell = (text) => {
-          const cell = document.createElement('div');
-          cell.className = 'bs-header-cell';
-          cell.textContent = text;
-          return cell;
-        };
-        
-        // Finish setup for current player
         const confirmSetup = () => {
           if (currentPlayer === 1) {
-            // Save P1 data
             p1Data.ships = JSON.parse(JSON.stringify(setupShips));
             setupShips.forEach(s => {
               for (let i = 0; i < s.size; i++) {
@@ -516,7 +603,6 @@
             });
             
             if (mode === 'ai') {
-              // Auto setup AI
               randomPlace();
               p2Data.ships = JSON.parse(JSON.stringify(setupShips));
               setupShips.forEach(s => {
@@ -526,10 +612,10 @@
               });
               startGame();
             } else {
-              // Switch to P2 setup
               currentPlayer = 2;
               setupShips = [];
               selectedShipIndex = -1;
+              pendingPlacement = null;
               
               showOverlay('換玩家 2 部署', '請將裝置交給玩家 2，不要偷看！', () => {
                 updateStatus('玩家 2 準備階段');
@@ -538,7 +624,6 @@
               });
             }
           } else {
-            // Save P2 data
             p2Data.ships = JSON.parse(JSON.stringify(setupShips));
             setupShips.forEach(s => {
               for (let i = 0; i < s.size; i++) {
@@ -588,7 +673,7 @@
         const isSunk = (board, attacks, shipId) => {
           for (let y = 0; y < SIZE; y++) {
             for (let x = 0; x < SIZE; x++) {
-              if (board[y][x] === shipId && attacks[y][x] !== 'hit') {
+              if (board[y][x] === shipId && attacks[y][x] !== 'hit' && attacks[y][x] !== 'sunk') {
                 return false;
               }
             }
@@ -607,25 +692,22 @@
         };
         
         const renderGameBoards = () => {
-          if (state !== 'playing') return;
+          if (state !== 'playing' && state !== 'gameover') return;
           
           const myData = currentPlayer === 1 ? p1Data : p2Data;
           const enemyData = currentPlayer === 1 ? p2Data : p1Data;
           const myAttacks = myData.attacks;
           const enemyAttacks = enemyData.attacks;
           
-          updateStatus(`輪到 <strong>玩家 ${currentPlayer}${mode === 'ai' && currentPlayer === 1 ? ' (你)' : ''}</strong> 攻擊`);
+          if (state === 'playing') {
+            updateStatus(`輪到 <strong>玩家 ${currentPlayer}${mode === 'ai' && currentPlayer === 1 ? ' (你)' : ''}</strong> 攻擊`);
+          }
           updateFleetStatus();
           
-          // Render My Board
-          myBoardEl.innerHTML = '';
-          myBoardEl.appendChild(createHeaderCell(''));
-          for (let i = 0; i < SIZE; i++) myBoardEl.appendChild(createHeaderCell(String.fromCharCode(65 + i)));
-          
+          // Update My Board
           for (let y = 0; y < SIZE; y++) {
-            myBoardEl.appendChild(createHeaderCell(y + 1));
             for (let x = 0; x < SIZE; x++) {
-              const cell = document.createElement('div');
+              const cell = myCells[y][x];
               cell.className = 'bs-cell';
               
               if (myData.board[y][x]) cell.classList.add('ship');
@@ -633,33 +715,22 @@
               if (enemyAttacks[y][x] === 'miss') cell.classList.add('miss');
               else if (enemyAttacks[y][x] === 'hit') cell.classList.add('hit');
               else if (enemyAttacks[y][x] === 'sunk') cell.classList.add('sunk');
-              
-              myBoardEl.appendChild(cell);
             }
           }
           
-          // Render Enemy Board
-          enemyBoardEl.innerHTML = '';
-          enemyBoardEl.appendChild(createHeaderCell(''));
-          for (let i = 0; i < SIZE; i++) enemyBoardEl.appendChild(createHeaderCell(String.fromCharCode(65 + i)));
-          
+          // Update Enemy Board
           for (let y = 0; y < SIZE; y++) {
-            enemyBoardEl.appendChild(createHeaderCell(y + 1));
             for (let x = 0; x < SIZE; x++) {
-              const cell = document.createElement('div');
-              cell.className = 'bs-cell interactive';
+              const cell = enemyCells[y][x];
+              cell.className = 'bs-cell';
               
               if (myAttacks[y][x] === 'miss') cell.classList.add('miss');
               else if (myAttacks[y][x] === 'hit') cell.classList.add('hit');
               else if (myAttacks[y][x] === 'sunk') cell.classList.add('sunk');
               
-              if (!myAttacks[y][x]) {
-                cell.addEventListener('click', () => handleAttack(x, y));
-              } else {
-                cell.classList.remove('interactive');
+              if (!myAttacks[y][x] && state === 'playing') {
+                cell.classList.add('interactive');
               }
-              
-              enemyBoardEl.appendChild(cell);
             }
           }
         };
@@ -689,11 +760,12 @@
             updateStatus(`未擊中。`);
           }
           
-          renderGameBoards(); // Show result briefly before switching
+          renderGameBoards();
           
           if (checkWin(enemyData, myAttacks)) {
             state = 'gameover';
             updateStatus(`<strong>遊戲結束！玩家 ${currentPlayer} 獲勝！</strong>`);
+            renderGameBoards();
             return;
           }
           
@@ -702,7 +774,7 @@
             if (state !== 'playing') return;
             
             if (mode === 'ai') {
-              currentPlayer = 2; // AI turn
+              currentPlayer = 2;
               updateStatus(`輪到 <strong>AI</strong> 攻擊...`);
               setTimeout(aiTurn, 1000);
             } else {
@@ -718,20 +790,39 @@
           if (state !== 'playing') return;
           
           const myAttacks = p2Data.attacks;
-          let x, y;
+          let x = -1, y = -1;
           let valid = false;
           
-          // Very basic AI: random until hit, then random adjacent.
-          // For simplicity, just pure random among unattacked for now.
-          while (!valid) {
-            x = Math.floor(Math.random() * SIZE);
-            y = Math.floor(Math.random() * SIZE);
-            if (!myAttacks[y][x]) valid = true;
+          while (aiTargetQueue.length > 0) {
+            const target = aiTargetQueue.shift();
+            if (!myAttacks[target.y][target.x]) {
+              x = target.x;
+              y = target.y;
+              valid = true;
+              break;
+            }
+          }
+
+          if (!valid) {
+            while (!valid) {
+              x = Math.floor(Math.random() * SIZE);
+              y = Math.floor(Math.random() * SIZE);
+              if (!myAttacks[y][x]) valid = true;
+            }
           }
           
           const targetShip = p1Data.board[y][x];
           if (targetShip) {
             myAttacks[y][x] = 'hit';
+            
+            const dirs = [[0,-1], [0,1], [-1,0], [1,0]];
+            dirs.forEach(([dx, dy]) => {
+              const nx = x + dx, ny = y + dy;
+              if (nx >= 0 && nx < SIZE && ny >= 0 && ny < SIZE && !myAttacks[ny][nx]) {
+                aiTargetQueue.push({x: nx, y: ny});
+              }
+            });
+
             if (isSunk(p1Data.board, myAttacks, targetShip)) {
               markSunkShip(myAttacks, p1Data.board, targetShip);
             }
@@ -741,8 +832,8 @@
           
           if (checkWin(p1Data, myAttacks)) {
             state = 'gameover';
-            renderGameBoards(); // Show final board state
             updateStatus(`<strong>遊戲結束！AI 獲勝！</strong>`);
+            renderGameBoards();
             return;
           }
           
@@ -754,11 +845,11 @@
           for (let y = 0; y < SIZE; y++) {
             for (let x = 0; x < SIZE; x++) {
               if (enemyData.board[y][x] && attacks[y][x] !== 'hit' && attacks[y][x] !== 'sunk') {
-                return false; // Still standing ships
+                return false;
               }
             }
           }
-          return true; // All ships hit
+          return true;
         };
         
         const showOverlay = (title, desc, callback) => {
@@ -774,10 +865,21 @@
           overlayBtn.addEventListener('click', handler);
         };
         
-        // Event Listeners
-        rotateBtn.addEventListener('click', () => {
+        const toggleRotation = () => {
           isHorizontal = !isHorizontal;
-          rotateBtn.textContent = `目前方向：${isHorizontal ? '水平' : '垂直'} (點擊旋轉)`;
+          if (pendingPlacement) pendingPlacement.isHorizontal = isHorizontal;
+          rotateBtn.textContent = `目前方向：${isHorizontal ? '水平' : '垂直'} (按 R 或右鍵旋轉)`;
+          renderSetupBoard();
+        };
+
+        window.addEventListener('keydown', (e) => {
+          if ((e.key === 'r' || e.key === 'R') && state === 'setup') {
+            toggleRotation();
+          }
+        });
+
+        rotateBtn.addEventListener('click', () => {
+          if (state === 'setup') toggleRotation();
         });
         
         randomPlaceBtn.addEventListener('click', randomPlace);
@@ -785,9 +887,9 @@
         restartBtn.addEventListener('click', initGame);
         modeEl.addEventListener('change', initGame);
         
-        // Start
         initGame();
       })();
+
     </script>
   </body>
 </html>

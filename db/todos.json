@@ -1,0 +1,47 @@
+[
+  {
+    "id": "todo-001",
+    "title": "設計個人網頁的 Todo-Blog 全端功能",
+    "content": "這是第一篇由 Express 後端載入的「待辦部落格」文章！\n\n### 實作重點：\n1. 用 Node.js/Express 搭建 RESTful API，提供 Todo 的 CRUD 功能。\n2. 前端介面整合了標籤分類與詳細內文 Modal 彈窗，點擊即可查看部落格長文。\n3. 優雅的離線降級 (Offline Fallback)：當 Express 後端伺服器沒開啟時，自動無縫切換到 LocalStorage，並顯示醒目的徽章提示，體驗超順暢！",
+    "done": true,
+    "tags": ["Fullstack", "React", "Nodejs"],
+    "createdAt": 1780963200000,
+    "updatedAt": 1780963200000
+  },
+  {
+    "id": "todo-002",
+    "title": "持續優化 Unity 2D 彈幕遊戲",
+    "content": "回顧之前的 Unity 2D 彈幕遊戲開發進度，下一步有幾個優化方向：\n\n- 改善敵機的彈道生成演算法，使其支援正弦波散射。\n- 加入 WebGL 打包版本，將其直接嵌入到此履歷網站的作品展示頁中，省去下載壓縮檔的繁瑣步驟。\n- 串接後端儲存玩家的最高分排行榜！",
+    "done": false,
+    "tags": ["Unity", "GameDev"],
+    "createdAt": 1780966800000,
+    "updatedAt": 1780966800000
+  },
+  {
+    "id": "todo-003",
+    "title": "研讀 RAG 檢索優化技巧 (Embedding & Vector DB)",
+    "content": "為了優化智慧導覽員專題的回答準確度，本週重點研讀了以下內容：\n\n1. **Sentence Transformers**：測試了不同中英文雙語 Embedding 模型的語意特徵編碼效果。\n2. **Hybrid Search**：嘗試將 BM25 關鍵字搜尋與 Dense Vector Search 進行權重融合 (Reciprocal Rank Fusion, RRF)，以提升檢索的召回率 (Recall)。\n3. **Chroma DB**：微調了距離度量指標（從 L2 改為 Cosine Similarity），測試結果顯示對長文字的相似度匹配效果更好。",
+    "done": true,
+    "tags": ["AI", "RAG", "Research"],
+    "createdAt": 1780970400000,
+    "updatedAt": 1780970400000
+  },
+  {
+    "id": "todo-004",
+    "title": "重構棋類遊戲 AI 演算法",
+    "content": "目前 Othello (黑白棋) 與 Chess (西洋棋) 的 AI 計算主要是在瀏覽器主執行緒中進行，當 Minimax 搜尋深度大於 3 時，容易造成瀏覽器畫面短暫卡頓。\n\n### 計畫解決方案：\n- 使用 **Web Workers** 技術將 AI 計算移至後台執行緒，避免阻塞 UI 渲染。\n- 優化西洋棋 AI 的 Alpha-Beta 剪枝，加入簡單的預先排列步法 (Move Ordering)，以提升剪枝效率。\n- 五子棋 AI 棋型評分表加入防守權重調整，降低攻擊性並提高防禦力。",
+    "done": false,
+    "tags": ["JavaScript", "AI", "GameDev"],
+    "createdAt": 1780974000000,
+    "updatedAt": 1780974000000
+  },
+  {
+    "id": "todo-005",
+    "title": "部署全端專案至雲端平台",
+    "content": "準備將此全端網頁部屬上線，以便供面試官在線測試：\n\n1. 前端 React (Vite) 靜態網頁打包部屬至 **GitHub Pages**。\n2. 後端 Node.js (Express) 伺服器部署至 **Render** 或 **Railway** 免費方案。\n3. 資料庫部分暫時維持使用本機 JSON 檔案，或快速切換為 **Render 的 SQLite 磁碟掛載**（Persistent Disk），確保資料重新部屬後不遺失。",
+    "done": false,
+    "tags": ["DevOps", "Deploy"],
+    "createdAt": 1780977600000,
+    "updatedAt": 1780977600000
+  }
+]

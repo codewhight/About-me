@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "page_path": "/",
+    "browser_type": "Chrome v122 (Windows 11)",
+    "ip_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "visit_time": "2026-06-09T08:00:05Z"
+  },
+  {
+    "id": 2,
+    "page_path": "/about.html",
+    "browser_type": "Safari v17.2 (iOS)",
+    "ip_hash": "f6e0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b112",
+    "visit_time": "2026-06-09T08:02:10Z"
+  },
+  {
+    "id": 3,
+    "page_path": "/board-games.html",
+    "browser_type": "Firefox v123 (macOS)",
+    "ip_hash": "a1b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b774",
+    "visit_time": "2026-06-09T08:05:45Z"
+  },
+  {
+    "id": 4,
+    "page_path": "/data-viz.html",
+    "browser_type": "Chrome v122 (Windows 11)",
+    "ip_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "visit_time": "2026-06-09T08:12:30Z"
+  },
+  {
+    "id": 5,
+    "page_path": "/todo-app.html",
+    "browser_type": "Edge v121 (Windows 11)",
+    "ip_hash": "bc80c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b999",
+    "visit_time": "2026-06-09T08:15:20Z"
+  }
+]

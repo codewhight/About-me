@@ -1,0 +1,27 @@
+[
+  {
+    "id": "t1",
+    "title": "設計個人網頁的 Todo-Blog 全端功能",
+    "content": "這是第一篇由 Express 後端載入的「待辦部落格」文章！\n\n### 實作重點：\n1. 用 Node.js/Express 搭建 RESTful API，提供 Todo 的 CRUD 功能。\n2. 前端介面整合了標籤分類與詳細內文 Modal 彈窗，點擊即可查看部落格長文。\n3. 優雅的離線降級 (Offline Fallback)：當 Express 後端伺服器沒開啟時，自動無縫切換到 LocalStorage，並顯示醒目的徽章提示，體驗超順暢！",
+    "done": false,
+    "tags": [
+      "Fullstack",
+      "React",
+      "Nodejs"
+    ],
+    "createdAt": 1780963200000,
+    "updatedAt": 1780973482930
+  },
+  {
+    "id": "t2",
+    "title": "持續優化 Unity 2D 彈幕遊戲",
+    "content": "回顧之前的 Unity 2D 彈幕遊戲開發進度，下一步有幾個優化方向：\n\nboss出生固定(改為可左右生成)\n\n近戰打尾王可能有困難(不可破壞物件)\n\n玩家血量/能量條 boss血條顯示不明確",
+    "done": false,
+    "tags": [
+      "Unity",
+      "GameDev"
+    ],
+    "createdAt": 1780966800000,
+    "updatedAt": 1780973330249
+  }
+]
